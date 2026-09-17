@@ -1,0 +1,8 @@
+.home-tagline {
+  max-width: 45ch;
+  font-size: 22px;
+
+  @media (max-width: 1024px) {
+    font-size: 18px;
+  }
+}

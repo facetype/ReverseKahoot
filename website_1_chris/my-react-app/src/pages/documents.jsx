@@ -36,7 +36,7 @@ function Documents() {
                     SRD
                 </button>
             </div>
-            
+
             <iframe
             className="documents-viewer"
             src={doc.file}
