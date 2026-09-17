@@ -1,0 +1,11 @@
+.about-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 65ch;
+  text-align: left;
+
+  @media (max-width: 1024px) {
+    gap: 14px;
+  }
+}

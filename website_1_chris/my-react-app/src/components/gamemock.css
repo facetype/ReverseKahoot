@@ -1,0 +1,125 @@
+.mock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.mock-bar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.mock-points {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.mock-question {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  padding: 12px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  text-align: center;
+  letter-spacing: 2px;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.mock-question.revealed {
+  border-style: solid;
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  letter-spacing: normal;
+}
+
+.mock-answers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mock-answer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.mock-answer.picked,
+.mock-answer.correct {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.mock-key {
+  display: grid;
+  place-items: center;
+  flex: 0 0 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--social-bg);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.mock-text {
+  flex: 1;
+  color: var(--text-h);
+}
+
+.mock-bid {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.mock-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  background: var(--accent-bg);
+  font-size: 13px;
+  transition: opacity 0.3s;
+}
+
+.mock-hint.empty {
+  border-color: var(--border);
+  background: transparent;
+  opacity: 0.55;
+}
+
+.mock-buy {
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}

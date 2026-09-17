@@ -1,0 +1,35 @@
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: start;
+  gap: 32px;
+  width: 100%;
+  padding-inline: 20px;
+  box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+    gap: 24px;
+  }
+}
+
+.member-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 420px;
+  margin-inline: auto;
+
+  img {
+    width: clamp(110px, 11vw, 180px);
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  h2 {
+    margin: 0;
+  }
+}
