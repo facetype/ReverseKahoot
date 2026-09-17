@@ -5,16 +5,39 @@
     border-radius: 10px;
 }
 
-.documents-tab{
-    font: inherit;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    padding: 18px 260px;
-    border-radius: 10px;
-    cursor: pointer;
+.documents-tabs {
     display: flex;
     gap: 12px;
+    margin: 4px 0 20px;
     justify-content: center;
-    transition: border-color 0.2s, background 0.2s;
+}
+
+.documents-tab {
+    font: inherit;
+    font-size: 28px;
+    font-weight: 500;
+    min-width:120px;
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.documents-tab:hover {
+    border-color: var(--accent-border);
+}
+
+.documents-tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.documents-tab.active {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    color: var(--accent);
+    font-weight: 600;
 }

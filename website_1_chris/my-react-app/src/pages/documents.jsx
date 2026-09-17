@@ -18,9 +18,23 @@ function Documents() {
             <h1>Documents</h1>
             <p>Here you can view our Software Development Plan (SDP) and our Software Requirements and Design plan (SRD).</p>
 
-            <div className="documents-tab">
-                <button type="button" onClick={() => setCurrent(0)}>SDP</button>
-                <button type="button" onClick={() => setCurrent(1)}>SRD</button>
+            <div className="documents-tabs">
+                <button
+                    type="button"
+                    className={current === 0 ? 'documents-tab active' : 'documents-tab'}
+                    aria-pressed={current === 0}
+                    onClick={() => setCurrent(0)}
+                >
+                    SDP
+                </button>
+                <button
+                    type="button"
+                    className={current === 1 ? 'documents-tab active' : 'documents-tab'}
+                    aria-pressed={current === 1}
+                    onClick={() => setCurrent(1)}
+                >
+                    SRD
+                </button>
             </div>
             
             <iframe
