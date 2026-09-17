@@ -9,6 +9,7 @@ function Navbar() {
                 <li><NavLink to="/about" end> About</NavLink></li>
                 <li><NavLink to="/team" end> Team</NavLink></li>
                 <li><NavLink to="/demo" end>Demo</NavLink></li>
+                <li><NavLink to="/documents" end >Documents</NavLink></li>
             </ul>
         </nav>
     )
