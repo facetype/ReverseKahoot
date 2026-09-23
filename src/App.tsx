@@ -1,29 +1,15 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '../utils/supabase/supabase'
+import { useEffect, useState } from 'react'
+import { listQuizzes } from './database/quiz-api'
+import type { QuizSummary } from './database/types'
 
-interface Quiz {
-  quizId: number
-  quizTitle: string
-}
-
+// Example component: lists quiz titles. Not mounted anywhere; see Home.tsx.
 export default function App() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([])
+  const [quizzes, setQuizzes] = useState<QuizSummary[]>([])
 
   useEffect(() => {
-    async function getQuiz() {
-      const { data, error } = await supabase.from('Quiz').select()
-
-      if (error) {
-        console.error('Error fetching quizzes:', error)
-        return
-      }
-
-      if (data) {
-        setQuizzes(data)
-      }
-    }
-
-    getQuiz()
+    listQuizzes()
+      .then(setQuizzes)
+      .catch((error: unknown) => console.error('Error fetching quizzes:', error))
   }, [])
 
   return (
