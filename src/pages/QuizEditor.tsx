@@ -8,7 +8,7 @@ const emptyQuestion = (): QuestionDraft => ({
     answers: Array.from({ length: 4 }, () => ({ answerText: '', isCorrect: false }))
 })
 
-export default function QuizEditor({ userId }: { userId: string }) {
+function QuizEditor({ userId }: { userId: string }) {
     const { quizId } = useParams(); // undefined => create
     const navigate = useNavigate();
     const [draft, setDraft] = useState<QuizDraft>({
@@ -120,3 +120,5 @@ export default function QuizEditor({ userId }: { userId: string }) {
         </div>
     );
 }
+
+export default QuizEditor
