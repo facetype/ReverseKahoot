@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { supabase, supabaseConfigured } from './lib/supabase.ts'
+import { supabase, supabaseConfigured } from '../utils/supabase/supabase.ts'
 import {
   USERNAME_MAX,
   USERNAME_MIN,

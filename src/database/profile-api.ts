@@ -1,5 +1,5 @@
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase.ts'
+import { supabase } from '../utils/supabase/supabase.ts'
 import type { Profile } from './types'
 
 export const USERNAME_MIN = 3
