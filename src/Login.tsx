@@ -1,6 +1,14 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase, supabaseConfigured } from './lib/supabase.ts'
+import {
+  USERNAME_MAX,
+  USERNAME_MIN,
+  ensureProfile,
+  isUserNameTaken,
+  validateUserName,
+} from './database/profile-api.ts'
+import type { Profile } from './database/types.ts'
 import './Login.css'
 
 type Mode = 'signin' | 'signup' | 'reset' | 'update-password'
@@ -21,7 +29,7 @@ const copy: Record<Mode, { title: string; subtitle: string; submit: string }> = 
   },
   signup: {
     title: 'Create account',
-    subtitle: 'You will receive a confirmation email.',
+    subtitle: 'Pick a username other players will see. You will receive a confirmation email.',
     submit: 'Create account',
   },
   reset: {
@@ -40,7 +48,9 @@ function Login() {
   const [mode, setMode] = useState<Mode>('signin')
   const [session, setSession] = useState<Session | null>(null)
   const [email, setEmail] = useState('')
+  const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<Message>(null)
 
@@ -49,6 +59,7 @@ function Login() {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
     const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession)
+      if (!newSession) setProfile(null)
       if (event === 'PASSWORD_RECOVERY') {
         setMode('update-password')
         setMessage(null)
@@ -56,6 +67,25 @@ function Login() {
     })
     return () => listener.subscription.unsubscribe()
   }, [])
+
+  // Whenever a session appears, make sure the user's Profile row exists and
+  // load it so the username can be shown.
+  useEffect(() => {
+    if (!session) return
+    let cancelled = false
+    ensureProfile(session.user)
+      .then((p) => {
+        if (!cancelled) setProfile(p)
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return
+        const text = err instanceof Error ? err.message : 'Could not load your profile.'
+        setMessage({ kind: 'error', text })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [session])
 
   function switchMode(next: Mode) {
     setMode(next)
@@ -74,7 +104,18 @@ function Login() {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
       } else if (mode === 'signup') {
-        const { data, error } = await supabase.auth.signUp({ email, password })
+        const chosenName = userName.trim()
+        const invalid = validateUserName(chosenName)
+        if (invalid) throw new Error(invalid)
+        if (await isUserNameTaken(chosenName)) throw new Error('That username is already taken.')
+
+        // The username travels as auth metadata so the database trigger can
+        // create the Profile row even when email confirmation is required.
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { userName: chosenName } },
+        })
         if (error) throw error
         if (!data.session) {
           setMessage({ kind: 'success', text: 'Account created. Check your email to confirm it.' })
@@ -129,7 +170,8 @@ function Login() {
       <main className="auth-card">
         <h1>Signed in</h1>
         <p className="auth-user">
-          You are signed in as <strong>{session.user.email}</strong>
+          You are signed in as <strong>{profile?.userName ?? session.user.email}</strong>
+          {profile && <span className="auth-user-email"> ({session.user.email})</span>}
         </p>
         <button type="button" className="auth-submit" onClick={handleSignOut} disabled={loading}>
           Sign out
@@ -141,6 +183,7 @@ function Login() {
 
   const { title, subtitle, submit } = copy[mode]
   const showEmail = mode !== 'update-password'
+  const showUserName = mode === 'signup'
   const showPassword = mode !== 'reset'
 
   return (
@@ -177,6 +220,28 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+          </label>
+        )}
+
+        {showUserName && (
+          <label className="auth-field">
+            Username
+            <input
+              type="text"
+              name="username"
+              autoComplete="username"
+              required
+              minLength={USERNAME_MIN}
+              maxLength={USERNAME_MAX}
+              pattern="[A-Za-z0-9_]+"
+              title="Letters, numbers and underscores only"
+              spellCheck={false}
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+            <span className="auth-hint">
+              {USERNAME_MIN}-{USERNAME_MAX} characters. Letters, numbers and underscores.
+            </span>
           </label>
         )}
 

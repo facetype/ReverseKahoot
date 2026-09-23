@@ -172,3 +172,13 @@ body {
 .auth-user strong {
   color: var(--text);
 }
+
+.auth-hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.auth-user-email {
+  color: var(--muted);
+}
