@@ -21,7 +21,7 @@ async function addQuestions(quizId: number, questions: QuestionDraft[]) {
     }
 }
 
-export async function createQuiz(userId: number, draft: QuizDraft) {
+export async function createQuiz(userId: string, draft: QuizDraft) {
     const { data: quiz, error } = await supabase
         .from('Quiz')
         .insert({ userId, categoryId: draft.categoryId, quizTitle: draft.quizTitle })
