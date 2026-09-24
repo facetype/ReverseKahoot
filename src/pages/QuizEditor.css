@@ -174,3 +174,37 @@
 .quiz-list-item strong {
   color: var(--text-h);
 }
+
+.quiz-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quiz-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quiz-hosted {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.quiz-hosted strong {
+  color: var(--text-h);
+}
+
+.quiz-code {
+  font-family: var(--mono);
+  font-size: 2.5rem;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--accent);
+}
