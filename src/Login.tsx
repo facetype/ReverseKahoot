@@ -11,6 +11,9 @@ import {
 import type { Profile } from './database/types.ts'
 import './Login.css'
 
+// The main app lives on a separate page, so leaving login is a full navigation.
+const HOME_PATH = '/'
+
 type Mode = 'signin' | 'signup' | 'reset' | 'update-password'
 
 type Message = { kind: 'error' | 'success'; text: string } | null
@@ -103,6 +106,7 @@ function Login() {
       if (mode === 'signin') {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
+        window.location.assign(HOME_PATH)
       } else if (mode === 'signup') {
         const chosenName = userName.trim()
         const invalid = validateUserName(chosenName)
@@ -119,6 +123,8 @@ function Login() {
         if (error) throw error
         if (!data.session) {
           setMessage({ kind: 'success', text: 'Account created. Check your email to confirm it.' })
+        } else {
+          window.location.assign(HOME_PATH)
         }
       } else if (mode === 'reset') {
         const redirectTo = `${window.location.origin}/login/`
@@ -173,9 +179,12 @@ function Login() {
           You are signed in as <strong>{profile?.userName ?? session.user.email}</strong>
           {profile && <span className="auth-user-email"> ({session.user.email})</span>}
         </p>
-        <button type="button" className="auth-submit" onClick={handleSignOut} disabled={loading}>
-          Sign out
-        </button>
+        <div className="auth-actions">
+          <a className="auth-submit" href={HOME_PATH}>Continue</a>
+          <button type="button" className="auth-link" onClick={handleSignOut} disabled={loading}>
+            Sign out
+          </button>
+        </div>
         {message && <p className={`auth-message ${message.kind}`}>{message.text}</p>}
       </main>
     )
