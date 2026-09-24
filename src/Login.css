@@ -1,16 +1,22 @@
 :root {
-  --bg: #f4f5f7;
-  --card: #ffffff;
-  --text: #1a1d21;
-  --muted: #62676e;
-  --border: #d5d9df;
-  --accent: #2f5bea;
-  --accent-hover: #244ac4;
-  --error: #b3261e;
-  --error-bg: #fbeaea;
-  --success: #1e6b3a;
-  --success-bg: #e7f5ec;
+  --bg: #121510;
+  --card: #1c2019;
+  --text: #f1ebdc;
+  --muted: #a9aca1;
+  --border: #2d3229;
+  --accent: #c9a640;
+  --accent-hover: #b8952f;
+  --accent-text: #14160f;
+  --error: #e27a70;
+  --error-bg: rgba(226, 122, 112, 0.12);
+  --success: #8fc79a;
+  --success-bg: rgba(143, 199, 154, 0.12);
   --radius: 10px;
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  color-scheme: dark;
 }
 
 *,
@@ -27,8 +33,9 @@ body {
   padding: 1rem;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.4;
+  font-family: var(--sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 .auth-card {
@@ -38,12 +45,14 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .auth-card h1 {
   margin: 0 0 0.25rem;
-  font-size: 1.4rem;
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .auth-subtitle {
@@ -77,7 +86,6 @@ body {
   background: var(--card);
   color: var(--text);
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .auth-form {
@@ -94,13 +102,14 @@ body {
 
 .auth-field input {
   width: 100%;
+  min-width: 0;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 4px);
   font: inherit;
   font-size: 1rem;
   color: var(--text);
-  background: var(--card);
+  background: var(--bg);
 }
 
 .auth-field input:focus {
@@ -114,11 +123,22 @@ body {
   border: 0;
   border-radius: calc(var(--radius) - 4px);
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-text);
   font: inherit;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+}
+
+a.auth-submit {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.auth-actions {
+  display: grid;
+  gap: 1rem;
 }
 
 .auth-submit:hover {

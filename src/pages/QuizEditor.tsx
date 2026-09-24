@@ -78,7 +78,7 @@ function QuizEditor() {
         try {
             if (quizId) await updateQuiz(Number(quizId), cleanup);
             else await createQuiz(cleanup);
-            navigate('/');
+            navigate('/quizzes');
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Could not save the quiz.');
         } finally {
@@ -96,7 +96,7 @@ function QuizEditor() {
         setError(null);
         try {
             await deleteQuiz(Number(quizId));
-            navigate('/');
+            navigate('/quizzes');
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Could not delete the quiz.');
             setConfirmDelete(false);
@@ -119,7 +119,7 @@ function QuizEditor() {
         <div className="quiz-page">
             <header className="quiz-page-header">
                 <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
-                <Link className="quiz-link" to="/">Back to quizzes</Link>
+                <Link className="quiz-link" to="/quizzes">Back to quizzes</Link>
             </header>
 
             <div className="quiz-form">
