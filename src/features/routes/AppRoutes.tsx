@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
-import QuizList from './pages/QuizList';
-import QuizEditor from './pages/QuizEditor';
-import LandingPage from './pages/LandingPage';
+import QuizList from '@/pages/QuizList';
+import QuizEditor from '@/pages/QuizEditor';
+import LandingPage from '@/pages/LandingPage';
 
-/* Home page. Routes are hash based (see main.tsx), so URLs look like /#/quizzes/new */
-export default function App() {
+/* App routes. Routes are hash based (see src/main.tsx), so URLs look like /#/quizzes/new */
+export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />

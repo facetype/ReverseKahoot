@@ -1,6 +1,6 @@
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '../utils/supabase/supabase.ts'
-import type { Profile } from './types'
+import { supabase } from './client.ts'
+import type { Profile } from '@/common/types'
 
 export const USERNAME_MIN = 3
 export const USERNAME_MAX = 24

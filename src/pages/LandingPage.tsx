@@ -1,11 +1,11 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useSession } from '../utils/useSession';
-import { supabase } from '../utils/supabase/supabase';
-import './QuizEditor.css';
+import { useSession } from '@/features/auth/useSession';
+import { supabase } from '@/api/supabase/client';
+import '@/common/styles/quiz.css';
+import { JOIN_CODE_LENGTH } from '@/common/constants/game';
 import './LandingPage.css';
 
-const JOIN_CODE_LENGTH = 6;
 
 function LandingPage() {
     const { session } = useSession();

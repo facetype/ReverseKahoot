@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { supabase } from './supabase/supabase.ts'
+import { supabase } from '@/api/supabase/client.ts'
 
 // Tracks the Supabase auth session. `loading` is true until the first check
 // finishes so pages can avoid flashing a "sign in" prompt on reload.

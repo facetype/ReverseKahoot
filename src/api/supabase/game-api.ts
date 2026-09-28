@@ -1,7 +1,7 @@
-import { supabase } from '../utils/supabase/supabase.ts';
-import type { HostedGame } from './types';
+import { supabase } from './client.ts';
+import type { HostedGame } from '@/common/types';
+import { JOIN_CODE_LENGTH } from '@/common/constants/game';
 
-export const JOIN_CODE_LENGTH = 6;
 // No 0/O, 1/I/L: codes are read off a shared screen and typed on phones.
 const JOIN_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const MAX_CODE_ATTEMPTS = 5;

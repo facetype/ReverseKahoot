@@ -1,5 +1,5 @@
-import { supabase } from '../utils/supabase/supabase.ts';
-import type { Category, QuizDraft, QuestionDraft, QuizSummary } from './types';
+import { supabase } from './client.ts';
+import type { Category, QuizDraft, QuestionDraft, QuizSummary } from '@/common/types';
 
 // The client is null when env vars are missing; every call goes through here
 // so callers get one clear error instead of a crash.
