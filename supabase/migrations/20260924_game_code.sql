@@ -1,5 +1,5 @@
 -- Public join code for a game session. Generated client-side (see
--- src/database/game-api.ts); the unique constraint is what guarantees no two
+-- src/api/supabase/game-api.ts); the unique constraint is what guarantees no two
 -- games share a code, and the client retries on a collision.
 -- Nullable so existing rows without a code stay valid. Idempotent.
 

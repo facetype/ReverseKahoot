@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getCategories, listQuizzes } from '../database/quiz-api';
-import { hostGame } from '../database/game-api';
-import type { Category, HostedGame, QuizSummary } from '../database/types';
-import { useSession } from '../utils/useSession';
-import './QuizEditor.css';
+import { getCategories, listQuizzes } from '@/api/supabase/quiz-api';
+import { hostGame } from '@/api/supabase/game-api';
+import type { Category, HostedGame, QuizSummary } from '@/common/types';
+import { useSession } from '@/features/auth/useSession';
+import '@/common/styles/quiz.css';
 
 function QuizList() {
     const { session } = useSession();

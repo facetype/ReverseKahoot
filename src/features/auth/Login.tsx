@@ -1,14 +1,14 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { supabase, supabaseConfigured } from './utils/supabase/supabase.ts'
+import { supabase, supabaseConfigured } from '@/api/supabase/client.ts'
 import {
   USERNAME_MAX,
   USERNAME_MIN,
   ensureProfile,
   isUserNameTaken,
   validateUserName,
-} from './database/profile-api.ts'
-import type { Profile } from './database/types.ts'
+} from '@/api/supabase/profile-api.ts'
+import type { Profile } from '@/common/types'
 import './Login.css'
 
 // The main app lives on a separate page, so leaving login is a full navigation.

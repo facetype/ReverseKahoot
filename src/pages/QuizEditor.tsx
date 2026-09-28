@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { createQuiz, getCategories, getQuiz, updateQuiz, deleteQuiz } from '../database/quiz-api';
-import type { Category, QuizDraft, QuestionDraft } from '../database/types';
-import { useSession } from '../utils/useSession';
-import './QuizEditor.css';
+import { createQuiz, getCategories, getQuiz, updateQuiz, deleteQuiz } from '@/api/supabase/quiz-api';
+import type { Category, QuizDraft, QuestionDraft } from '@/common/types';
+import { useSession } from '@/features/auth/useSession';
+import '@/common/styles/quiz.css';
 
 const emptyQuestion = (): QuestionDraft => ({
     questionText: '',
