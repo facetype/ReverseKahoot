@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '@/features/auth/useSession';
 import { supabase } from '@/api/supabase/client';
-import '@/common/styles/QuizEditor.css';
+import '@/common/styles/quiz.css';
 import { JOIN_CODE_LENGTH } from '@/common/constants/game';
 import './LandingPage.css';
 
