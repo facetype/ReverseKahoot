@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getCategories, listQuizzes } from '@/api/supabase/quiz-api';
 import { hostGame } from '@/api/supabase/game-api';
 import type { Category, HostedGame, QuizSummary } from '@/common/types';
-import { useSession } from '@/features/auth/useSession';
+import { useSession } from '@/pages/auth/useSession';
 import '@/common/styles/quiz.css';
 
 function QuizList() {
@@ -47,7 +47,7 @@ function QuizList() {
                 <h1>Quizzes</h1>
                 {userId
                     ? <Link className="quiz-button" to="/quizzes/new">New quiz</Link>
-                    : <a className="quiz-button" href="/login/">Sign in to create quizzes</a>}
+                    : <Link className="quiz-button" to="/login">Sign in to create quizzes</Link>}
             </header>
 
             {error && <p className="quiz-error">{error}</p>}
