@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useSession } from '@/features/auth/useSession';
+import { useSession } from '@/pages/auth/useSession';
 import { supabase } from '@/api/supabase/client';
 import '@/common/styles/quiz.css';
 import { JOIN_CODE_LENGTH } from '@/common/constants/game';
@@ -36,7 +36,7 @@ function LandingPage() {
                         <Link className="landing-host" to="/quizzes">Host a game</Link>
                         <button className="landing-host" type="button" onClick={handleLogOut}>Log out</button>
                     </>
-                    : <a className="landing-host" href="/login/">Sign in</a>}
+                    : <Link className="landing-host" to="/login">Sign in</Link>}
             </header>
 
             <main className="landing-main">
