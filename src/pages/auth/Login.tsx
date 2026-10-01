@@ -200,6 +200,7 @@ function Login() {
   const showPassword = mode !== 'reset'
 
   return (
+    <div className="auth">
     <main className="auth-card">
       {mode !== 'update-password' && (
         <div className="auth-tabs" role="tablist" aria-label="Authentication options">
@@ -286,6 +287,7 @@ function Login() {
 
       {message && <p className={`auth-message ${message.kind}`}>{message.text}</p>}
     </main>
+    </div>
   )
 }
 
