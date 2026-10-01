@@ -1,0 +1,23 @@
+.navbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-host {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.navbar-host:hover,
+.navbar-host:focus-visible {
+  color: var(--text-h);
+}

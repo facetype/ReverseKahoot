@@ -5,6 +5,7 @@ import { hostGame } from '@/api/supabase/game-api';
 import type { Category, HostedGame, QuizSummary } from '@/common/types';
 import { useSession } from '@/features/auth/useSession';
 import '@/common/styles/quiz.css';
+import Navbar from '@/common/components/navbar/navbar';
 
 function QuizList() {
     const { session } = useSession();
@@ -43,6 +44,7 @@ function QuizList() {
 
     return (
         <div className="quiz-page">
+            <Navbar/>
             <header className="quiz-page-header">
                 <h1>Quizzes</h1>
                 {userId
