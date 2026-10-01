@@ -43,8 +43,8 @@ function QuizList() {
     };
 
     return (
+        <div><Navbar/>
         <div className="quiz-page">
-            <Navbar/>
             <header className="quiz-page-header">
                 <h1>Quizzes</h1>
                 {userId
@@ -90,6 +90,7 @@ function QuizList() {
                     </li>
                 ))}
             </ul>
+        </div>
         </div>
     );
 }
