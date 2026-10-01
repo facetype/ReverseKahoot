@@ -5,7 +5,7 @@ import { supabase } from '@/api/supabase/client';
 import '@/common/styles/quiz.css';
 import { JOIN_CODE_LENGTH } from '@/common/constants/game';
 import './LandingPage.css';
-
+import Navbar from '@/common/components/navbar/navbar';
 
 function LandingPage() {
     const { session } = useSession();
@@ -29,15 +29,9 @@ function LandingPage() {
     };
 
     return (
+        
         <div className="landing-page">
-            <header className="landing-header">
-                {session
-                    ? <>
-                        <Link className="landing-host" to="/quizzes">Host a game</Link>
-                        <button className="landing-host" type="button" onClick={handleLogOut}>Log out</button>
-                    </>
-                    : <a className="landing-host" href="/login/">Sign in</a>}
-            </header>
+            <Navbar/>
 
             <main className="landing-main">
                 <h1>Blinded <em>Flutter</em></h1>

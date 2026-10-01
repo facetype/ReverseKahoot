@@ -4,6 +4,7 @@ import { createQuiz, getCategories, getQuiz, updateQuiz, deleteQuiz } from '@/ap
 import type { Category, QuizDraft, QuestionDraft } from '@/common/types';
 import { useSession } from '@/features/auth/useSession';
 import '@/common/styles/quiz.css';
+import Navbar from '@/common/components/navbar/navbar';
 
 const emptyQuestion = (): QuestionDraft => ({
     questionText: '',
@@ -117,9 +118,9 @@ function QuizEditor() {
 
     return (
         <div className="quiz-page">
+            <Navbar/>
             <header className="quiz-page-header">
                 <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
-                <Link className="quiz-link" to="/quizzes">Back to quizzes</Link>
             </header>
 
             <div className="quiz-form">
