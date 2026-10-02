@@ -117,92 +117,95 @@ function QuizEditor() {
     }
 
     return (
-        <div className="quiz-page">
+        <div>
             <Navbar/>
-            <header className="quiz-page-header">
-                <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
-            </header>
+            <div className="quiz-page">
+                
+                <header className="quiz-page-header">
+                    <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
+                </header>
 
-            <div className="quiz-form">
-                <label className="quiz-field">
-                    Quiz title
-                    <input
-                        placeholder="Quiz title"
-                        value={draft.quizTitle}
-                        onChange={e => setDraft(d => ({ ...d, quizTitle: e.target.value }))}
-                    />
-                </label>
-
-                <label className="quiz-field">
-                    Category
-                    <select
-                        value={draft.categoryId ?? ''}
-                        onChange={e => setDraft(d => ({ ...d, categoryId: e.target.value ? Number(e.target.value) : null }))}
-                    >
-                        <option value="">Pick a category</option>
-                        {categories.map(c => (
-                            <option key={c.categoryId} value={c.categoryId}>{c.categoryName}</option>
-                        ))}
-                    </select>
-                </label>
-
-                {draft.questions.map((q, qi) => (
-                    <fieldset key={qi} className="quiz-question">
-                        <legend>Question {qi + 1}</legend>
+                <div className="quiz-form">
+                    <label className="quiz-field">
+                        Quiz title
                         <input
-                            placeholder={`Question ${qi + 1}`}
-                            value={q.questionText}
-                            onChange={e => updateQuestion(qi, x => ({ ...x, questionText: e.target.value }))}
+                            placeholder="Quiz title"
+                            value={draft.quizTitle}
+                            onChange={e => setDraft(d => ({ ...d, quizTitle: e.target.value }))}
                         />
-                        {q.answers.map((a, ai) => (
-                            <label key={ai} className="quiz-answer">
-                                <input
-                                    type="radio"
-                                    name={`correct-${qi}`}
-                                    title="Mark as the correct answer"
-                                    checked={a.isCorrect}
-                                    onChange={() =>
-                                        updateQuestion(qi, x => ({
-                                            ...x, answers: x.answers.map((y, j) => ({ ...y, isCorrect: j === ai })),
-                                        }))
-                                    }
-                                />
-                                <input
-                                    placeholder={`Answer ${ai + 1}`}
-                                    value={a.answerText}
-                                    onChange={e =>
-                                        updateQuestion(qi, x => ({
-                                            ...x, answers: x.answers.map((y, j) => (j === ai ? { ...y, answerText: e.target.value } : y)),
-                                        }))
-                                    }
-                                />
-                            </label>
-                        ))}
-                        <button
-                            type="button"
-                            className="quiz-link"
-                            onClick={() => setDraft(d => ({ ...d, questions: d.questions.filter((_, i) => i !== qi) }))}
+                    </label>
+
+                    <label className="quiz-field">
+                        Category
+                        <select
+                            value={draft.categoryId ?? ''}
+                            onChange={e => setDraft(d => ({ ...d, categoryId: e.target.value ? Number(e.target.value) : null }))}
                         >
-                            Remove question
-                        </button>
-                    </fieldset>
-                ))}
+                            <option value="">Pick a category</option>
+                            {categories.map(c => (
+                                <option key={c.categoryId} value={c.categoryId}>{c.categoryName}</option>
+                            ))}
+                        </select>
+                    </label>
 
-                <div className="quiz-actions">
-                    <button type="button" onClick={() => setDraft(d => ({ ...d, questions: [...d.questions, emptyQuestion()] }))}>
-                        Add question
-                    </button>
-                    <button type="button" className="quiz-button" onClick={handleSave} disabled={saving}>
-                        {saving ? 'Saving...' : 'Save quiz'}
-                    </button>
-                    {quizId && (
-                        <button type="button" className="quiz-danger" onClick={handleDelete} disabled={saving}>
-                            {confirmDelete ? 'Click again to confirm delete' : 'Delete quiz'}
+                    {draft.questions.map((q, qi) => (
+                        <fieldset key={qi} className="quiz-question">
+                            <legend>Question {qi + 1}</legend>
+                            <input
+                                placeholder={`Question ${qi + 1}`}
+                                value={q.questionText}
+                                onChange={e => updateQuestion(qi, x => ({ ...x, questionText: e.target.value }))}
+                            />
+                            {q.answers.map((a, ai) => (
+                                <label key={ai} className="quiz-answer">
+                                    <input
+                                        type="radio"
+                                        name={`correct-${qi}`}
+                                        title="Mark as the correct answer"
+                                        checked={a.isCorrect}
+                                        onChange={() =>
+                                            updateQuestion(qi, x => ({
+                                                ...x, answers: x.answers.map((y, j) => ({ ...y, isCorrect: j === ai })),
+                                            }))
+                                        }
+                                    />
+                                    <input
+                                        placeholder={`Answer ${ai + 1}`}
+                                        value={a.answerText}
+                                        onChange={e =>
+                                            updateQuestion(qi, x => ({
+                                                ...x, answers: x.answers.map((y, j) => (j === ai ? { ...y, answerText: e.target.value } : y)),
+                                            }))
+                                        }
+                                    />
+                                </label>
+                            ))}
+                            <button
+                                type="button"
+                                className="quiz-link"
+                                onClick={() => setDraft(d => ({ ...d, questions: d.questions.filter((_, i) => i !== qi) }))}
+                            >
+                                Remove question
+                            </button>
+                        </fieldset>
+                    ))}
+
+                    <div className="quiz-actions">
+                        <button type="button" onClick={() => setDraft(d => ({ ...d, questions: [...d.questions, emptyQuestion()] }))}>
+                            Add question
                         </button>
-                    )}
+                        <button type="button" className="quiz-button" onClick={handleSave} disabled={saving}>
+                            {saving ? 'Saving...' : 'Save quiz'}
+                        </button>
+                        {quizId && (
+                            <button type="button" className="quiz-danger" onClick={handleDelete} disabled={saving}>
+                                {confirmDelete ? 'Click again to confirm delete' : 'Delete quiz'}
+                            </button>
+                        )}
+                    </div>
+
+                    {error && <p className="quiz-error" role="alert">{error}</p>}
                 </div>
-
-                {error && <p className="quiz-error" role="alert">{error}</p>}
             </div>
         </div>
     );
