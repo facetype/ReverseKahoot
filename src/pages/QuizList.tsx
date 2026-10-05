@@ -6,6 +6,7 @@ import type { Category, HostedGame, QuizSummary } from '@/common/types';
 import { useSession } from '@/features/auth/useSession';
 import '@/common/styles/quiz.css';
 import Navbar from '@/common/components/navbar/navbar';
+import { useMemo } from 'react';
 
 function QuizList() {
     const { session } = useSession();
@@ -43,24 +44,26 @@ function QuizList() {
         }
     };
 
-    const handleInputChange = (e: { target: { value: any; }; }) => {
-        try {
-            const searchTerm = e.target.value;
-
-            if (searchItem.charAt(0) == "@")
-            {
-                console.log("searching for user");
-                setSearchItem(searchTerm);
-            }
-            else {
-                console.log("searching for quiz");
-                setSearchItem(searchTerm);
-            }
-        }
-        catch (e: unknown) {
-            setError(e instanceof Error ? e.message : 'Could not find item.');
-        }
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchItem(e.target.value);
     }
+
+    const searchedItems = useMemo(() => {
+        const searchTerm = searchItem.trim().toLowerCase();
+        if (!searchTerm) return quizzes;
+
+        // usernames
+        if (searchTerm.startsWith('@')) {
+            const username = searchTerm.slice(1);
+            if (!username) return quizzes;
+
+            // edit later; need a way to properly search for usernames instead of UUIDs
+            return quizzes.filter(q => q.userId?.toLowerCase().includes(username));
+        }
+
+        // quizzes
+        return quizzes.filter(q => q.quizTitle.toLowerCase().includes(searchTerm));
+    }, [quizzes, searchItem]);
 
     return (
         <div><Navbar/>
@@ -72,7 +75,7 @@ function QuizList() {
                     type="text"
                     value={searchItem}
                     onChange={handleInputChange}
-                    placeholder="Search for quizzes, or add @ at the beginning to search for users"
+                    placeholder="Search for quizzes, or add '@' at the beginning to search for users"
                 />
 
                 {userId
@@ -93,7 +96,7 @@ function QuizList() {
             {quizzes.length === 0 && !error && <p className="quiz-muted">No quizzes yet.</p>}
 
             <ul className="quiz-list">
-                {quizzes.map(quiz => (
+                {searchedItems.map(quiz => (
                     <li key={quiz.quizId} className="quiz-list-item">
                         <div>
                             <strong>{quiz.quizTitle}</strong>
