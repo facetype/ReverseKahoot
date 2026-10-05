@@ -69,8 +69,9 @@ function QuizList() {
     return (
         <div><Navbar/>
         <div className="quiz-page">
+            <h1>Quizzes</h1>
+            <br/>
             <header className="quiz-page-header">
-                <h1>Quizzes</h1>
 
                 <input
                     type="text"
