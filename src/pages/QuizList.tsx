@@ -70,6 +70,7 @@ function QuizList() {
                         <div>
                             <strong>{quiz.quizTitle}</strong>
                             <span className="quiz-muted"> {categoryName(quiz.categoryId)}</span>
+                            <br/><span>@{quiz.userId}</span>
                         </div>
                         {userId && (
                             <div className="quiz-item-actions">
