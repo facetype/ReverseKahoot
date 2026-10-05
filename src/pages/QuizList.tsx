@@ -21,6 +21,8 @@ function QuizList() {
                 setQuizzes(q);
                 setCategories(c);
             })
+
+            
             .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load quizzes.'));
     }, []);
 
@@ -70,13 +72,11 @@ function QuizList() {
                         <div>
                             <strong>{quiz.quizTitle}</strong>
                             <span className="quiz-muted"> {categoryName(quiz.categoryId)}</span>
-                            <br/><span>@{quiz.userId}</span>
+                            <br/><span>@{quiz.userName ?? 'unknown'}</span>
                         </div>
                         {userId && (
                             <div className="quiz-item-actions">
-                                {quiz.userId === userId && (
-                                    <Link className="quiz-link" to={`/quizzes/${quiz.quizId}`}>Edit</Link>
-                                )}
+                                <Link className="quiz-link" to={`/quizzes/${quiz.quizId}`}>Edit</Link>
                                 <button
                                     className="quiz-button"
                                     type="button"

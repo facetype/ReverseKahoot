@@ -30,10 +30,15 @@ export async function getCategories(): Promise<Category[]> {
 export async function listQuizzes(): Promise<QuizSummary[]> {
     const { data, error } = await db()
         .from('Quiz')
-        .select('quizId, quizTitle, categoryId, userId')
+        .select('quizId, quizTitle, categoryId, userId, Profile(userName)')
         .order('quizId', { ascending: false });
     if (error) throw error;
-    return data ?? [];
+    return (data ?? []).map(({Profile, ...quiz}) => ({
+        ...quiz,
+        userName: (Profile as unknown as {userName: string} | null)?.userName ?? null,
+    })
+    
+    );
 }
 
 async function addQuestions(quizId: number, questions: QuestionDraft[]) {
