@@ -23,6 +23,8 @@ function QuizList() {
                 setQuizzes(q);
                 setCategories(c);
             })
+
+            
             .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load quizzes.'));
     }, []);
 
@@ -56,9 +58,8 @@ function QuizList() {
         if (searchTerm.startsWith('@')) {
             const username = searchTerm.slice(1);
             if (!username) return quizzes;
-
-            // edit later; need a way to properly search for usernames instead of UUIDs
-            return quizzes.filter(q => q.userId?.toLowerCase().includes(username));
+            
+            return quizzes.filter(q => q.userName?.toLowerCase().includes(username));
         }
 
         // quizzes
@@ -101,12 +102,11 @@ function QuizList() {
                         <div>
                             <strong>{quiz.quizTitle}</strong>
                             <span className="quiz-muted"> {categoryName(quiz.categoryId)}</span>
+                            <br/><span>@{quiz.userName ?? 'unknown'}</span>
                         </div>
                         {userId && (
                             <div className="quiz-item-actions">
-                                {quiz.userId === userId && (
-                                    <Link className="quiz-link" to={`/quizzes/${quiz.quizId}`}>Edit</Link>
-                                )}
+                                <Link className="quiz-link" to={`/quizzes/${quiz.quizId}`}>Edit</Link>
                                 <button
                                     className="quiz-button"
                                     type="button"
