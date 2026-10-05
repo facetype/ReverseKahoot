@@ -14,6 +14,7 @@ function QuizList() {
     const [error, setError] = useState<string | null>(null);
     const [hosted, setHosted] = useState<(HostedGame & { quizTitle: string }) | null>(null);
     const [hostingQuizId, setHostingQuizId] = useState<number | null>(null);
+    const [searchItem, setSearchItem] = useState('');
 
     useEffect(() => {
         Promise.all([listQuizzes(), getCategories()])
@@ -42,11 +43,22 @@ function QuizList() {
         }
     };
 
+    const handleInputChange = (e: { target: { value: any; }; }) => {
+        const searchTerm = e.target.value;
+        setSearchItem(searchTerm)
+    }
+
     return (
         <div><Navbar/>
         <div className="quiz-page">
             <header className="quiz-page-header">
                 <h1>Quizzes</h1>
+                <input
+                    type="text"
+                    value={searchItem}
+                    onChange={handleInputChange}
+                    placeholder="Type to search"                    
+                />
                 {userId
                     ? <Link className="quiz-button" to="/quizzes/new">New quiz</Link>
                     : <a className="quiz-button" href="/login/">Sign in to create quizzes</a>}
