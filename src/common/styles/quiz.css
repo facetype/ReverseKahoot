@@ -15,23 +15,22 @@
 .quiz-page-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: first baseline;
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
 }
 
-.quiz-page-header input {
+.quiz-page-search {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  width: 30rem;
+  width: 27.3rem;
   height: 2.5rem;
   padding-left: 1rem;
-  padding-right: 2rem;
-  margin-right: -2rem;
+  margin-left: 5%;
   border-radius: 4px;
   font-size: 0.9rem;
   border-color: var(--accent);

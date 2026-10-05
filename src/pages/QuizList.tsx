@@ -69,23 +69,22 @@ function QuizList() {
     return (
         <div><Navbar/>
         <div className="quiz-page">
-            <h1>Quizzes</h1>
+            <h1 className="center-text">Quizzes</h1>
             <br/>
             <header className="quiz-page-header">
 
-                <input
+                <input className="quiz-page-search"
                     type="text"
                     value={searchItem}
                     onChange={handleInputChange}
                     placeholder="Search for quizzes, or add '@' at the beginning to search for users"
                 />
-
                 {userId
                     ? <Link className="quiz-button" to="/quizzes/new">New quiz</Link>
-                    : <a className="quiz-button" href="/login/">Sign in to create quizzes</a>}
+                    : <a className="quiz-button" href="/login/">Sign in</a>}
             </header>
 
-            {error && <p className="quiz-error">{error}</p>}
+            {error && <p className="quiz-error center-text">{error}</p>}
 
             {hosted && (
                 <section className="quiz-hosted" role="status" aria-label="Hosted game">
@@ -95,7 +94,7 @@ function QuizList() {
                 </section>
             )}
 
-            {quizzes.length === 0 && !error && <p className="quiz-muted">No quizzes yet.</p>}
+            {quizzes.length === 0 && !error && <p className="quiz-muted center-text">No quizzes yet.</p>}
 
             <ul className="quiz-list">
                 {searchedItems.map(quiz => (
