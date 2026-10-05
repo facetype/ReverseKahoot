@@ -58,9 +58,8 @@ function QuizList() {
         if (searchTerm.startsWith('@')) {
             const username = searchTerm.slice(1);
             if (!username) return quizzes;
-
-            // edit later; need a way to properly search for usernames instead of UUIDs
-            return quizzes.filter(q => q.userId?.toLowerCase().includes(username));
+            
+            return quizzes.filter(q => q.userName?.toLowerCase().includes(username));
         }
 
         // quizzes
