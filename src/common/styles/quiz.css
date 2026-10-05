@@ -21,6 +21,21 @@
   margin-bottom: 1.5rem;
 }
 
+.quiz-page-header input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 23rem;
+  height: 45px;
+  padding-left: .5rem;
+  border-radius: 200px;
+  border-color: var(--accent);
+  background-color: var(--bg);
+  color: var(--text);
+}
+
 .quiz-form {
   display: grid;
   gap: 1.25rem;
