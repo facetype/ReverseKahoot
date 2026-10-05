@@ -43,12 +43,19 @@ function QuizList() {
         }
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: { target: { value: any; }; }) => {
         try {
             const searchTerm = e.target.value;
-            const usernameSearchPrefix = '@';
 
-            setSearchItem(searchTerm);
+            if (searchItem.charAt(0) == "@")
+            {
+                console.log("searching for user");
+                setSearchItem(searchTerm);
+            }
+            else {
+                console.log("searching for quiz");
+                setSearchItem(searchTerm);
+            }
         }
         catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Could not find item.');
@@ -65,7 +72,7 @@ function QuizList() {
                     type="text"
                     value={searchItem}
                     onChange={handleInputChange}
-                    placeholder="Search for quizzes, or add @ at the beginning to search for users"          
+                    placeholder="Search for quizzes, or add @ at the beginning to search for users"
                 />
 
                 {userId
