@@ -103,7 +103,6 @@ function QuizList() {
                             <strong>{quiz.quizTitle}</strong>
                             <span className="quiz-muted"> {categoryName(quiz.categoryId)}</span>
                             <br/><span>@{quiz.userName ?? 'unknown'}</span>
-                            <br/><span className="quiz-page-date-text">Created: (dd.mm.YYYY) | Last edited: (dd.mm.YYYY)</span>
                         </div>
                         {userId && (
                             <div className="quiz-item-actions">

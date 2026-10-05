@@ -38,10 +38,6 @@
   color: var(--text);
 }
 
-.quiz-page-date-text {
-  font-size: 0.7rem;
-}
-
 .quiz-form {
   display: grid;
   gap: 1.25rem;
