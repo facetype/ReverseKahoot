@@ -43,9 +43,16 @@ function QuizList() {
         }
     };
 
-    const handleInputChange = (e: { target: { value: any; }; }) => {
-        const searchTerm = e.target.value;
-        setSearchItem(searchTerm)
+    const handleInputChange = (e) => {
+        try {
+            const searchTerm = e.target.value;
+            const usernameSearchPrefix = '@';
+
+            setSearchItem(searchTerm);
+        }
+        catch (e: unknown) {
+            setError(e instanceof Error ? e.message : 'Could not find item.');
+        }
     }
 
     return (
@@ -53,12 +60,14 @@ function QuizList() {
         <div className="quiz-page">
             <header className="quiz-page-header">
                 <h1>Quizzes</h1>
+
                 <input
                     type="text"
                     value={searchItem}
                     onChange={handleInputChange}
-                    placeholder="Type to search"                    
+                    placeholder="Search for quizzes, or add @ at the beginning to search for users"          
                 />
+
                 {userId
                     ? <Link className="quiz-button" to="/quizzes/new">New quiz</Link>
                     : <a className="quiz-button" href="/login/">Sign in to create quizzes</a>}
