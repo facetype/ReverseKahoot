@@ -9,6 +9,12 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   background-color: rgba(0, 0, 0, .25);
+  transition: all 0.125s ease-in-out;
+}
+
+.navbar:hover {
+  background-color: rgba(0, 0, 0, .75);
+  transition: all 0.125s ease-in-out;
 }
 
 .navbar-host {
