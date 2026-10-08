@@ -6,6 +6,8 @@
   gap: 1.5rem;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .navbar-host {
