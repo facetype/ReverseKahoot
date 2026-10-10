@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getCategories, listQuizzes } from '@/api/supabase/quiz-api';
-import { hostGame } from '@/api/supabase/game-api';
-import type { Category, HostedGame, QuizSummary } from '@/common/types';
-import { useSession } from '@/features/auth/useSession';
+import { createQuizInstance } from '@/api/supabase/quiz-instance-api';
+import type { Category, QuizSummary } from '@/common/types';
+import { useSession } from '@/pages/auth/useSession';
 import '@/common/styles/quiz.css';
 import Navbar from '@/common/components/navbar/navbar';
 import { useMemo } from 'react';
@@ -13,9 +13,9 @@ function QuizList() {
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [hosted, setHosted] = useState<(HostedGame & { quizTitle: string }) | null>(null);
     const [hostingQuizId, setHostingQuizId] = useState<number | null>(null);
     const [searchItem, setSearchItem] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         Promise.all([listQuizzes(), getCategories()])
@@ -37,8 +37,10 @@ function QuizList() {
         setHostingQuizId(quiz.quizId);
         setError(null);
         try {
-            const game = await hostGame(quiz.quizId);
-            setHosted({ ...game, quizTitle: quiz.quizTitle });
+            const instance = await createQuizInstance(quiz.quizId);
+            navigate(`/lobby/${instance.instanceId}`, {
+                state: { instance, quizTitle: quiz.quizTitle, isHost: true },
+            });
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Could not host the game.');
         } finally {
@@ -85,14 +87,6 @@ function QuizList() {
             </header>
 
             {error && <p className="quiz-error center-text">{error}</p>}
-
-            {hosted && (
-                <section className="quiz-hosted" role="status" aria-label="Hosted game">
-                    <p className="quiz-muted">Game code for <strong>{hosted.quizTitle}</strong></p>
-                    <p className="quiz-code">{hosted.gameCode}</p>
-                    <p className="quiz-muted">Players enter this code on the home page to join.</p>
-                </section>
-            )}
 
             {quizzes.length === 0 && !error && <p className="quiz-muted center-text">No quizzes yet.</p>}
 

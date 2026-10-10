@@ -1,17 +1,14 @@
 import './navbar.css';
 import { Link } from 'react-router-dom';
-import { useSession } from '@/features/auth/useSession';
+import { useSession } from '@/pages/auth/useSession';
 import { supabase } from '@/api/supabase/client';
-import { useState, type FormEvent } from 'react';
 
 const Navbar = () => {
   const { session } = useSession();
-  const [message, setMessage] = useState<string | null>(null);
 
   const handleLogOut = async () => {
       if (!supabase) return;
-      const { error } = await supabase.auth.signOut();
-      if (error) setMessage(error.message);
+      await supabase.auth.signOut();
   };
 
   return (

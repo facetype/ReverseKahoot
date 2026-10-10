@@ -17,7 +17,7 @@ interface QuizInstanceRow {
   hostId: string | null;
   attendingPlayers: string[] | null;
   isStarted: boolean | null;
-  createdAt: string;
+  alreadyJoined: boolean;
 }
 
 export default {
@@ -49,42 +49,27 @@ export default {
       );
     }
 
-    // Look the game up by its code. ctx.supabaseAdmin bypasses RLS, which the
-    // player would not pass for a game they have not joined yet.
-    const { data, error } = await ctx.supabaseAdmin
-      .from("QuizInstance")
-      .select("id, quizId, joinCode, hostId, attendingPlayers, isStarted, createdAt")
-      .eq("joinCode", joinCode)
-      .maybeSingle<QuizInstanceRow>();
+    // The RPC holds a row lock while checking isStarted and adding the player.
+    // Concurrent joins cannot overwrite each other, and starting the game takes
+    // the same lock. Only the admin client can call this with a verified user id.
+    const { data: result, error } = await ctx.supabaseAdmin.rpc("join_quiz_instance", {
+      p_join_code: joinCode,
+      p_player_id: playerId,
+    });
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      const status = error.code === "PT404" ? 404 : error.code === "PT409" ? 409 : 500;
+      return Response.json({ error: error.message }, { status });
     }
-    if (!data) {
-      return Response.json({ error: `No game has the join code "${joinCode}".` }, { status: 404 });
+    if (!result) {
+      return Response.json({ error: "Could not join the game." }, { status: 500 });
     }
-    // The lobby closes the moment the host starts the quiz.
-    if (data.isStarted) {
-      return Response.json({ error: "This game has already started." }, { status: 409 });
-    }
-
-    const attending = data.attendingPlayers ?? [];
-    const alreadyJoined = attending.includes(playerId);
+    const data = result as QuizInstanceRow;
+    const players = data.attendingPlayers ?? [];
+    const alreadyJoined = data.alreadyJoined;
     const channel = quizChannel(data.id);
 
-    let players = attending;
     if (!alreadyJoined) {
-      players = [...attending, playerId];
-
-      const { error: updateError } = await ctx.supabaseAdmin
-        .from("QuizInstance")
-        .update({ attendingPlayers: players })
-        .eq("id", data.id);
-
-      if (updateError) {
-        return Response.json({ error: updateError.message }, { status: 500 });
-      }
-
       // Tell the host and the other players that someone joined the lobby.
       // A failed broadcast must not fail the join itself.
       try {
