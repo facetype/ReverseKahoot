@@ -18,7 +18,7 @@ const Navbar = () => {
     <div className="navbar">
       {session
           ? <>
-              <Link className="navbar-host" to="/">Host Quiz</Link>
+              <Link className="navbar-host" to="/">Join Quiz</Link>
               <Link className="navbar-host" to="/quizzes">Search Quiz</Link>
               <button className="navbar-host" type="button" onClick={handleLogOut}>Log out</button>
           </>
