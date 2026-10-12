@@ -1,37 +1,38 @@
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { useSession } from '@/features/auth/useSession';
-import { supabase } from '@/api/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { joinQuizInstance } from '@/api/supabase/quiz-instance-api';
 import '@/common/styles/quiz.css';
 import { JOIN_CODE_LENGTH } from '@/common/constants/game';
 import './LandingPage.css';
 import Navbar from '@/common/components/navbar/navbar';
 
 function LandingPage() {
-    const { session } = useSession();
+    const navigate = useNavigate();
     const [code, setCode] = useState('');
     const [message, setMessage] = useState<string | null>(null);
+    const [joining, setJoining] = useState(false);
 
-    const handleLogOut = async () => {
-        if (!supabase) return;
-        const { error } = await supabase.auth.signOut();
-        if (error) setMessage(error.message);
-    };
-
-    const handleJoin = (e: FormEvent<HTMLFormElement>) => {
+    const handleJoin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (code.length !== JOIN_CODE_LENGTH) {
             setMessage(`Game codes are ${JOIN_CODE_LENGTH} characters.`);
             return;
         }
-        // Games do not exist in the database yet; wire this up once they do.
-        setMessage(`Joining games is not available yet (code ${code}).`);
+        setJoining(true);
+        setMessage(null);
+        try {
+            const instance = await joinQuizInstance(code);
+            navigate(`/lobby/${instance.instanceId}`, { state: { instance, isHost: false } });
+        } catch (err: unknown) {
+            setMessage(err instanceof Error ? err.message : 'Could not join the game.');
+        } finally {
+            setJoining(false);
+        }
     };
 
     return (
-        
         <div className="landing-page">
-            <Navbar/>
+            <Navbar />
 
             <main className="landing-main">
                 <h1>Blinded <em>Flutter</em></h1>
@@ -48,7 +49,9 @@ function LandingPage() {
                         spellCheck={false}
                         aria-describedby={message ? 'join-message' : undefined}
                     />
-                    <button className="quiz-button" type="submit">Join</button>
+                    <button className="quiz-button" type="submit" disabled={joining}>
+                        {joining ? 'Joining…' : 'Join'}
+                    </button>
                 </form>
                 {message && <p id="join-message" className="quiz-muted" role="status">{message}</p>}
             </main>

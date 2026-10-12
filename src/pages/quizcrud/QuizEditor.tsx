@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createQuiz, getCategories, getQuiz, updateQuiz, deleteQuiz } from '@/api/supabase/quiz-api';
 import type { Category, QuizDraft, QuestionDraft } from '@/common/types';
-import { useSession } from '@/features/auth/useSession';
+import { useSession } from '@/pages/auth/useSession';
 import '@/common/styles/quiz.css';
 import Navbar from '@/common/components/navbar/navbar';
 
@@ -111,7 +111,7 @@ function QuizEditor() {
             <div className="quiz-page">
                 <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
                 <p className="quiz-muted">You need to be signed in to create or edit quizzes.</p>
-                <a className="quiz-button" href="/login/">Go to sign in</a>
+                <Link className="quiz-button" to="/login">Go to sign in</Link>
             </div>
         );
     }
