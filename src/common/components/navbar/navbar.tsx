@@ -16,13 +16,18 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-      {session
-          ? <>
-              <Link className="navbar-host" to="/">Join Quiz</Link>
-              <Link className="navbar-host" to="/quizzes">Search Quiz</Link>
-              <button className="navbar-host" type="button" onClick={handleLogOut}>Log out</button>
-          </>
-          : <a className="navbar-host" href="/login/">Sign in</a>}
+      <div className="navbar-left">
+        <img className="favicon" src='../../../../public/favicon.svg' width="30px" height="30px"/>
+      </div>
+      <div className="navbar-right">
+        {session
+            ? <>
+                <Link className="navbar-host" to="/">Join Quiz</Link>
+                <Link className="navbar-host" to="/quizzes">Search Quiz</Link>
+                <button className="navbar-host" type="button" onClick={handleLogOut}>Log out</button>
+            </>
+            : <a className="navbar-host" href="/login/">Sign in</a>}
+      </div>
     </div>
   );
 };
