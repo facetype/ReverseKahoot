@@ -14,12 +14,13 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="navbar-left">
-        <img className="favicon" src='../../../../public/favicon.svg' width="30px" height="30px"/>
+        <Link className="navbar-host" to="/">
+          <img className="favicon" src='/public/favicon.svg' width="30px" height="30px"/>
+        </Link>
       </div>
       <div className="navbar-right">
         {session
             ? <>
-                <Link className="navbar-host" to="/">Join Quiz</Link>
                 <Link className="navbar-host" to="/quizzes">Search Quiz</Link>
                 <button className="navbar-host" type="button" onClick={handleLogOut}>Log out</button>
             </>
