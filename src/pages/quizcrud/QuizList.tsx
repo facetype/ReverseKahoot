@@ -100,7 +100,9 @@ function QuizList() {
                         </div>
                         {userId && (
                             <div className="quiz-item-actions">
-                                <Link className="quiz-link" to={`/quizzes/${quiz.quizId}`}>Edit</Link>
+                                {quiz.userId === userId && (
+                                    <Link className="quiz-link" to={`/quizzes/${quiz.quizId}`}>Edit</Link>
+                                )}
                                 <button
                                     className="quiz-button"
                                     type="button"
