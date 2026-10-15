@@ -6,11 +6,7 @@ function Game() {
     const [gameState, setGameState] = useState(Number);
     const [question, setQuestion] = useState(Number);
     
-    var currentState = 0; // 0 = lobby, 1 = game, 2 = end
-    var currentGameState = 0; // 0 = showOptions, 1 = showAnswer
-    
     // edit later, this should be defined by/use a quiz's questions
-    var currentQuestion = 0;
     const maxQuestions = 10;
 
     const gameButtonText = () => {
