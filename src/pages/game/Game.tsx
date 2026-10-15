@@ -18,12 +18,16 @@ function Game() {
         //setPlayersAnsweredCount(4);
         //setPlayerCount(20);
 
+        // better example
+        var _playerCount = 20;
+        var _playersAnsweredCount = 4;
+
 
         if (state == 0){
-            playerCounterText = playerCount.toString();
+            playerCounterText = _playerCount.toString();
         }
         else{
-            playerCounterText = playersAnsweredCount.toString() + "/" + playerCount.toString();
+            playerCounterText = _playersAnsweredCount.toString() + "/" + _playerCount.toString();
         }
 
         return playerCounterText;
@@ -90,17 +94,31 @@ function Game() {
         );
     }
 
-    const game = () => {
+    // placeholder buttons; can be replaced later should we think of an alternative way to implement a proper mechanic
+    const gameOptions = () => {
         return (
             <div className="gameContainer">
                 <h1>Game</h1>
-                <p>game</p>
+                <p>options</p>
                 <p>Question #{question}</p>
                 <div className="gameOptionsContainer">
                     <button>Option 1</button>
                     <button>Option 2</button>
                     <button>Option 3</button>
                     <button>Option 4</button>
+                </div>
+            </div>
+        );
+    }
+
+    const gameAnswer = () => {
+        return (
+            <div className="gameContainer">
+                <h1>Game</h1>
+                <p>answer</p>
+                <p>Question #{question}</p>
+                <div className="gameOptionsContainer">
+                    <button>Option 1</button>
                 </div>
             </div>
         );
@@ -122,7 +140,12 @@ function Game() {
 
         if (state == 1){
             // game
-            return game()
+            if (gameState == 0){
+                return gameOptions();
+            }
+            else{
+                return gameAnswer();
+            }
         }
 
         if (state == 2){
@@ -142,7 +165,7 @@ function Game() {
                     {playerCounterText()}
                 </div>
                 <div className="pageButton">
-                    <button onClick={changeState}><p>{gameButtonText()}</p></button>
+                    <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-button-advance.svg" width="50px"/></button>
                 </div>
             </div>
         </div>
