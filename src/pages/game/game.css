@@ -1,0 +1,30 @@
+.gameFooter {
+    display: flex;
+    position: fixed;
+    justify-content: flex-end;
+    bottom: 0;
+    background-color: grey;
+    height: 4rem;
+    width: 100%;
+}
+
+.playerCounter {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    border-radius: 15px;
+    background-color: red;
+    margin: 0.5rem;
+    padding: 0.5rem;
+}
+
+.gameButton {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    border-radius: 15px;
+    background-color: red;
+    margin: 0.5rem;
+    margin-left: 0;
+    padding: 0.5rem;
+}

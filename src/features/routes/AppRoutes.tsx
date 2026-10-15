@@ -6,6 +6,7 @@ import QuizEditor from '@/pages/quizcrud/QuizEditor';
 import LandingPage from '@/pages/landingpage/LandingPage';
 import Login from '@/pages/auth/Login';
 import Lobby from '@/pages/lobby/Lobby';
+import Game from '@/pages/game/Game';
 
 /* App routes. Routes are hash based (see src/main.tsx), so URLs look like /#/quizzes/new */
 export default function AppRoutes() {
@@ -28,6 +29,7 @@ export default function AppRoutes() {
       <Route path="/quizzes" element={<QuizList />} />
       <Route path="/quizzes/new" element={<QuizEditor />} />
       <Route path="/quizzes/:quizId" element={<QuizEditor />} />
+      <Route path="/game" element={<Game/>} />
       <Route path="/lobby/:instanceId" element={<Lobby />} />
       <Route path="*" element={<LandingPage />} />
     </Routes>
