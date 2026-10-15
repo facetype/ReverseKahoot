@@ -90,7 +90,7 @@ function Game() {
             <div className="gameContainer">
                 <h1>Game</h1>
                 <p>options</p>
-                <p>Question #{question}</p>
+                <p>Question #{question + 1}</p>
                 <div className="gameOptionsContainer">
                     <button>Option 1</button>
                     <button>Option 2</button>
