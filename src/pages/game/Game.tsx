@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import '@/pages/game/game.css'
+import '@/common/styles/game.css'
 
 function Game() {
     const [state, setState] = useState(0);
@@ -14,43 +14,47 @@ function Game() {
     const maxQuestions = 20;
 
     const gameButtonText = () => {
+        var text = "";
+
         if (state == 0){
-            return "Start quiz";
+            text = "Start quiz";
         }
         else if (state == 1){
             if (gameState == 0){
-                return "Reveal answer";
+                text = "Reveal answer";
             }
             else {
-                return "Next question";
+                text = "Next question";
             }
-            
         }
         else {
-            return "End quiz";
+            text = "End quiz";
         }
+
+        return text;
     };
 
     const changeState = () => {
-        if (currentState == 1){ // we're in the game, so run through the two states (show options, reveal answer & results)
-            currentGameState++;
-            console.log("we are gaming, game state:", currentGameState);
+        if (currentState == 0){
+            // lobby
+            currentState++;
         }
-        else {
-            currentState++; // advance to game (we start at the lobby)
-            currentQuestion++;
-        }
-
-        // the game after showing all questions
-        if (currentGameState == 1){
-            if (currentQuestion == maxQuestions){
-                currentState++;
-                currentGameState = 2; // end quiz
+        else if (currentState == 1){
+            // game
+            if (currentGameState == 0){
+                // show options, reveal answer
+                currentGameState++;
+            }
+            else {
+                // next question
+                currentGameState = 0;
+                currentQuestion++;
+                console.log("next question")
             }
         }
-
-        if (currentState == 2){
-            console.log("game ended")
+        else {
+            // end quiz
+            console.log("end quiz");
         }
 
         setState(currentState);
@@ -66,14 +70,13 @@ function Game() {
         <div className="gameContainer">
             <h1>Game</h1>
             <p>game</p>
-
+            <p>Question #{question}</p>
             <div className="gameFooter">
                 <div className="playerCounter">
                     4/20
                 </div>
                 <div className="gameButton">
                     <button onClick={changeState}><p>{gameButtonText()}</p></button>
-                    
                 </div>
             </div>
         </div>

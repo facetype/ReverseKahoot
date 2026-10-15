@@ -1,9 +1,16 @@
+.gameContainer {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: #222222;
+}
+
 .gameFooter {
     display: flex;
     position: fixed;
     justify-content: flex-end;
     bottom: 0;
-    background-color: grey;
+    background-color: #111111;
     height: 4rem;
     width: 100%;
 }
@@ -13,7 +20,7 @@
     align-items: center;
     text-align: center;
     border-radius: 15px;
-    background-color: red;
+    background-color: #333333;
     margin: 0.5rem;
     padding: 0.5rem;
 }
@@ -23,7 +30,7 @@
     align-items: center;
     text-align: center;
     border-radius: 15px;
-    background-color: red;
+    background-color: #333333;
     margin: 0.5rem;
     margin-left: 0;
     padding: 0.5rem;
