@@ -15,7 +15,7 @@ const Navbar = () => {
     <div className="navbar">
       <div className="navbar-left">
         <Link className="navbar-host" to="/">
-          <img className="favicon" src='/public/favicon.svg' width="30px" height="30px"/>
+          <img className="favicon" src='/favicon.svg' width="30px" height="30px"/>
         </Link>
       </div>
       <div className="navbar-right">
