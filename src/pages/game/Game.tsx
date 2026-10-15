@@ -2,16 +2,16 @@ import { useState } from 'react';
 import '@/common/styles/game.css'
 
 function Game() {
-    const [state, setState] = useState(0);
-    const [gameState, setGameState] = useState(0);
-    const [question, setQuestion] = useState(0);
+    const [state, setState] = useState(Number);
+    const [gameState, setGameState] = useState(Number);
+    const [question, setQuestion] = useState(Number);
     
     var currentState = 0; // 0 = lobby, 1 = game, 2 = end
-    var currentGameState = 0; // 0 = gameOptions, 1 = gameAnswer
+    var currentGameState = 0; // 0 = showOptions, 1 = showAnswer
     
     // edit later, this should be defined by/use a quiz's questions
     var currentQuestion = 0;
-    const maxQuestions = 20;
+    const maxQuestions = 10;
 
     const gameButtonText = () => {
         var text = "";
@@ -35,31 +35,30 @@ function Game() {
     };
 
     const changeState = () => {
-        if (currentState == 0){
-            // lobby
-            currentState++;
-        }
-        else if (currentState == 1){
-            // game
-            if (currentGameState == 0){
-                // show options, reveal answer
-                currentGameState++;
-            }
-            else {
-                // next question
-                currentGameState = 0;
-                currentQuestion++;
-                console.log("next question")
-            }
-        }
-        else {
-            // end quiz
-            console.log("end quiz");
+        if (state == 0){
+            // lobby, start quiz
+            setState(state + 1);
         }
 
-        setState(currentState);
-        setGameState(currentGameState);
-        setQuestion(currentQuestion);
+        if (state == 1){
+            // game
+            if (gameState == 0){
+                // show options, reveal answer
+                setGameState(1);
+            }
+            else{
+                // reveal answer, next question
+                setGameState(0);
+            }
+
+            if (question >= maxQuestions){
+                setQuestion(0);
+                setState(2);
+            }
+            else{
+                setQuestion(question + 1);
+            }
+        }
 
         console.log("state:", state);
         console.log("game state:", gameState);
