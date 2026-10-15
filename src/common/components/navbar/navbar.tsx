@@ -13,11 +13,9 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-      <div className="navbar-left">
-        <Link className="navbar-host" to="/">
+        <Link className="navbar-left" to="/">
           <img className="favicon" src='/favicon.svg' width="30px" height="30px"/>
         </Link>
-      </div>
       <div className="navbar-right">
         {session
             ? <>
