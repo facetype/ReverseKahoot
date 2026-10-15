@@ -5,9 +5,29 @@ function Game() {
     const [state, setState] = useState(Number);
     const [gameState, setGameState] = useState(Number);
     const [question, setQuestion] = useState(Number);
+    const [playerCount, setPlayerCount] = useState(Number);
+    const [playersAnsweredCount, setPlayersAnsweredCount] = useState(Number);
     
     // edit later, this should be defined by/use a quiz's questions
     const maxQuestions = 10;
+
+    const playerCounterText = () => {
+        var playerCounterText = "";
+
+        // example (THIS CRASHES THE PAGE!!!)
+        //setPlayersAnsweredCount(4);
+        //setPlayerCount(20);
+
+
+        if (state == 0){
+            playerCounterText = playerCount.toString();
+        }
+        else{
+            playerCounterText = playersAnsweredCount.toString() + "/" + playerCount.toString();
+        }
+
+        return playerCounterText;
+    }
 
     const gameButtonText = () => {
         var text = "";
@@ -56,21 +76,72 @@ function Game() {
             }
         }
 
-        console.log("state:", state);
-        console.log("game state:", gameState);
-        console.log("question:", question);
+        //console.log("state:", state);
+        //console.log("game state:", gameState);
+        //console.log("question:", question);
+    }
+
+    const lobby = () => {
+        return (
+            <div className="lobbyContainer">
+                <h1>Lobby</h1>
+                <p>room code</p>
+            </div>
+        );
+    }
+
+    const game = () => {
+        return (
+            <div className="gameContainer">
+                <h1>Game</h1>
+                <p>game</p>
+                <p>Question #{question}</p>
+                <div className="gameOptionsContainer">
+                    <button>Option 1</button>
+                    <button>Option 2</button>
+                    <button>Option 3</button>
+                    <button>Option 4</button>
+                </div>
+            </div>
+        );
+    }
+
+    const results = () => {
+        return (
+            <div className="resultsContainer">
+                <h1>Winner winner chicken dinner</h1>
+                <p>yay</p>
+            </div>
+        );
+    }
+
+    const pageState = () => {
+        if (state == 0){
+            return lobby()
+        }
+
+        if (state == 1){
+            // game
+            return game()
+        }
+
+        if (state == 2){
+            return results()
+        }
     }
 
     return (
-        <div className="gameContainer">
-            <h1>Game</h1>
-            <p>game</p>
-            <p>Question #{question + 1}</p>
-            <div className="gameFooter">
+        <div className="pageContainer">
+            <div className="gameStateContainer">
+                {pageState()}
+            </div>
+            
+            <div className="pageFooter">
                 <div className="playerCounter">
-                    4/20
+                    <img src="/elements/game/player-count-icon.svg" width="20px"/>
+                    {playerCounterText()}
                 </div>
-                <div className="gameButton">
+                <div className="pageButton">
                     <button onClick={changeState}><p>{gameButtonText()}</p></button>
                 </div>
             </div>
