@@ -22,6 +22,8 @@ function QuizEditor() {
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const userId = session?.user.id ?? null;
+    const [checking, setChecking] = useState(Boolean(quizId));
 
     useEffect(() => {
         getCategories()
@@ -36,18 +38,32 @@ function QuizEditor() {
     }, []);
 
     useEffect(() => {
-        if (!quizId) return;
+        if (!quizId || sessionLoading || !userId) return;
+        let cancelled = false;
         getQuiz(Number(quizId))
-            .then(q => setDraft({
-                quizTitle: q.quizTitle,
-                categoryId: q.categoryId,
-                questions: q.Question.map((qq: any) => ({
-                    questionText: qq.questionText,
-                    answers: qq.Answer.map((a: any) => ({ answerText: a.answerText, isCorrect: a.isCorrect })),
-                })),
-            }))
-            .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load the quiz.'));
-    }, [quizId]);
+            .then(q => {
+                if (cancelled) return;
+                if (q.userId !== userId) {
+                    navigate('/quizzes', { replace: true });
+                    return;
+                }
+                setDraft({
+                    quizTitle: q.quizTitle,
+                    categoryId: q.categoryId,
+                    questions: q.Question.map((qq: any) => ({
+                        questionText: qq.questionText,
+                        answers: qq.Answer.map((a: any) => ({ answerText: a.answerText, isCorrect: a.isCorrect })),
+                    })),
+                });
+                setChecking(false);
+            })
+            .catch((e: unknown) => {
+                if (cancelled) return;
+                setError(e instanceof Error ? e.message : 'Could not load the quiz.');
+                setChecking(false);
+            });
+        return () => { cancelled = true; };
+    }, [quizId, sessionLoading, userId, navigate]);
 
     const updateQuestion = (qi: number, fn: (q: QuestionDraft) => QuestionDraft) =>
         setDraft(d => ({ ...d, questions: d.questions.map((q, i) => (i === qi ? fn(q) : q)) }));
@@ -115,7 +131,16 @@ function QuizEditor() {
             </div>
         );
     }
-
+    if (quizId && checking) {
+        return (
+            <div>
+                <Navbar />
+                <div className="quiz-page">
+                    <p className="quiz-muted center-text">Loading quiz…</p>
+                </div>
+            </div>
+        );
+    }
     return (
         <div>
             <Navbar/>
