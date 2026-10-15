@@ -5,29 +5,20 @@ function Game() {
     const [state, setState] = useState(Number);
     const [gameState, setGameState] = useState(Number);
     const [question, setQuestion] = useState(Number);
-    const [playerCount, setPlayerCount] = useState(Number);
-    const [playersAnsweredCount, setPlayersAnsweredCount] = useState(Number);
+    const [playerCount, setPlayerCount] = useState(20); // example value
+    const [playersAnsweredCount, setPlayersAnsweredCount] = useState(4); // example value
     
     // edit later, this should be defined by/use a quiz's questions
     const maxQuestions = 9;
 
     const playerCounterText = () => {
         var playerCounterText = "";
-
-        // example (THIS CRASHES THE PAGE!!!)
-        //setPlayersAnsweredCount(4);
-        //setPlayerCount(20);
-
-        // better example
-        var _playerCount = 20;
-        var _playersAnsweredCount = 4;
-
-
+        
         if (state == 0){
-            playerCounterText = _playerCount.toString();
+            playerCounterText = playerCount.toString();
         }
         else{
-            playerCounterText = _playersAnsweredCount.toString() + "/" + _playerCount.toString();
+            playerCounterText = playersAnsweredCount.toString() + "/" + playerCount.toString();
         }
 
         return playerCounterText;
@@ -59,8 +50,7 @@ function Game() {
             // lobby, start quiz
             setState(state + 1);
         }
-
-        if (state == 1){
+        else if (state == 1){
             // game
             if (gameState == 0){
                 // show options, reveal answer
@@ -147,8 +137,7 @@ function Game() {
         if (state == 0){
             return lobby()
         }
-
-        if (state == 1){
+        else if (state == 1){
             // game
             if (gameState == 0){
                 return gameOptions();
@@ -157,8 +146,7 @@ function Game() {
                 return gameAnswer();
             }
         }
-
-        if (state == 2){
+        else {
             return results()
         }
     }
