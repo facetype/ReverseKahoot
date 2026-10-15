@@ -9,7 +9,7 @@ function Game() {
     const [playersAnsweredCount, setPlayersAnsweredCount] = useState(Number);
     
     // edit later, this should be defined by/use a quiz's questions
-    const maxQuestions = 10;
+    const maxQuestions = 9;
 
     const playerCounterText = () => {
         var playerCounterText = "";
@@ -113,11 +113,15 @@ function Game() {
 
     const gameAnswer = () => {
         return (
-            <div className="gameContainer">
-                <h1>Game</h1>
-                <p>answer</p>
-                <p>Question #{question}</p>
-                <div className="gameOptionsContainer">
+            <div className="gameAnswerContainer">
+                <div id="back">
+                    <img src="/elements/game/spiral.svg"/>
+                </div>
+
+                <div id="front">
+                    <h1>Game</h1>
+                    <p>answer</p>
+                    <p>Question #{question + 1}</p>
                     <button>Option 1</button>
                 </div>
             </div>
@@ -126,9 +130,15 @@ function Game() {
 
     const results = () => {
         return (
-            <div className="resultsContainer">
-                <h1>Winner winner chicken dinner</h1>
-                <p>yay</p>
+            <div className="gameResultsContainer">
+                <div id="back">
+                    <img src="/elements/game/spiral.svg"/>
+                </div>
+
+                <div id="front">
+                    <h1>Winner winner chicken dinner</h1>
+                    <p>yay</p>
+                </div>
             </div>
         );
     }
@@ -159,7 +169,7 @@ function Game() {
                 {pageState()}
             </div>
             
-            <div className="pageFooter">
+            <div id="front" className="pageFooter">
                 <div className="playerCounter">
                     <img src="/elements/game/player-count-icon.svg" width="20px"/>
                     {playerCounterText()}

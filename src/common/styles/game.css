@@ -84,3 +84,68 @@
     margin: .5rem;
     cursor: pointer;
 }
+
+.gameAnswerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.gameAnswerContainer button {
+    justify-content: center;
+    align-items: center;
+    font: inherit;
+    border: none;
+    border-radius: 15px;
+    height: 12rem;
+    width: 18rem;
+    background-color: #444444;
+    margin: .5rem;
+    cursor: pointer;
+}
+
+.gameAnswerContainer img {
+    position:fixed;
+    justify-content: center;
+    align-items: center;
+    width: 125%;
+    margin-top: -42rem;
+    margin-left: -50rem;
+
+    animation: imageRotate 60s infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes imageRotate {
+    from {rotate: 0deg;}
+    to {rotate:360deg;}
+}
+
+
+#back {
+    z-index: 1;
+}
+
+#front {
+    z-index: 2;
+}
+
+.gameResultsContainer{
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameResultsContainer img {
+    position:fixed;
+    justify-content: center;
+    align-items: center;
+    width: 125%;
+    margin-top: -35rem;
+    margin-left: -31rem;
+
+    animation: imageRotate 60s infinite;
+    animation-timing-function: linear;
+}
