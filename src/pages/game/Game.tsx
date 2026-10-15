@@ -45,14 +45,14 @@ function Game() {
             else{
                 // reveal answer, next question
                 setGameState(0);
-            }
-
-            if (question >= maxQuestions){
-                setQuestion(0);
-                setState(2);
-            }
-            else{
-                setQuestion(question + 1);
+                
+                if (question >= maxQuestions){
+                    setQuestion(0);
+                    setState(2);
+                }
+                else{
+                    setQuestion(question + 1);
+                }
             }
         }
 
@@ -65,7 +65,7 @@ function Game() {
         <div className="gameContainer">
             <h1>Game</h1>
             <p>game</p>
-            <p>Question #{question}</p>
+            <p>Question #{question + 1}</p>
             <div className="gameFooter">
                 <div className="playerCounter">
                     4/20
