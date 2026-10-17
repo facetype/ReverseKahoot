@@ -158,6 +158,90 @@ function Game() {
                             <p>1130 pts</p>
                         </div>
                     </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 6</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 7</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 8</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 9</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 10</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 11</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 12</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 13</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 14</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 15</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 16</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 17</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

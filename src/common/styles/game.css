@@ -149,6 +149,8 @@
     width: 25vw;
     height: 100vh;
     gap: 0.5rem;
+
+    overflow-y: auto;
 }
 
 .gameAnswerScoreboardContainer h3 {
@@ -165,7 +167,8 @@
     font-size: 24px;
     border-radius: 30px;
     width: 95%;
-    height: 8%;
+    min-height: 4rem;
+    flex-shrink: 0;
     padding-left: 5%;
     box-sizing: border-box;
     overflow: hidden;
