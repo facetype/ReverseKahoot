@@ -12,6 +12,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
 
 @keyframes imageRotate {
@@ -26,6 +27,17 @@
 
 #front {
     z-index: 2;
+}
+
+.spiralBackground img {
+    position:fixed;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 150vmax;
+    height: auto;
+    
+    animation: imageRotate 180s linear infinite;
 }
 
 /* LOBBY */
@@ -108,9 +120,9 @@
 
 .gameAnswerContainer {
     display: flex;
-    justify-content: center;
     align-items: center;
     overflow: hidden;
+    width: 100%;
 }
 
 .gameAnswerContainer button {
@@ -126,16 +138,52 @@
     cursor: pointer;
 }
 
-.gameAnswerContainer img {
-    position:fixed;
+
+.gameAnswerScoreboardContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    margin-left: auto;
+    background-color: rgba(10, 10, 10, .75);
+    width: 25vw;
+    height: 100vh;
+    gap: 0.5rem;
+}
+
+.gameAnswerScoreboardContainer h3 {
+    font-size: 34px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.gameAnswerScoreboardPlayerContainer {
+    display: flex;
+    align-items: center;
+    float: left;
+    background-color: #111111;
+    font-size: 24px;
+    border-radius: 30px;
+    width: 95%;
+    height: 8%;
+    padding-left: 5%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.gameAnswerScoreboardPlayerPointsContainer {
+    display: flex;
     justify-content: center;
     align-items: center;
-    width: 125%;
-    margin-top: -42rem;
-    margin-left: -50rem;
-
-    animation: imageRotate 60s infinite;
-    animation-timing-function: linear;
+    align-self: center;
+    text-align: center;
+    background-color: #333333;
+    border-radius: inherit;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: auto;
+    width: 40%;
+    height: 100%;
 }
 
 /* RESULTS */
@@ -145,18 +193,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.gameResultsContainer img {
-    position:fixed;
-    justify-content: center;
-    align-items: center;
-    width: 125%;
-    margin-top: -35rem;
-    margin-left: -31rem;
-
-    animation: imageRotate 60s infinite;
-    animation-timing-function: linear;
 }
 
 /* FOOTER */

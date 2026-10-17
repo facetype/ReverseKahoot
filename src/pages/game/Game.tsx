@@ -112,15 +112,52 @@ function Game() {
     const gameAnswer = () => {
         return (
             <div className="gameAnswerContainer">
-                <div id="back">
+                <div id="back" className="spiralBackground">
                     <img src="/elements/game/spiral.svg"/>
                 </div>
 
-                <div id="front">
+                <div id="front" style={{flex:'1'}}>
                     <h1>Game</h1>
                     <p>answer</p>
                     <p>Question #{question + 1}</p>
                     <button>Option 1</button>
+                </div>
+                <div id="front" className="gameAnswerScoreboardContainer">
+                    <h3>Scoreboard</h3>
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 1</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 2</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+                    
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 3</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+                    
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 4</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
+                    
+                    <div className="gameAnswerScoreboardPlayerContainer">
+                        <p>Player 5</p>
+                        <div className="gameAnswerScoreboardPlayerPointsContainer">
+                            <p>1130 pts</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -129,7 +166,7 @@ function Game() {
     const results = () => {
         return (
             <div className="gameResultsContainer">
-                <div id="back">
+                <div id="back" className="spiralBackground">
                     <img src="/elements/game/spiral.svg"/>
                 </div>
 
