@@ -10,9 +10,6 @@ function Game() {
     
     // edit later, this should be defined by/use a quiz's questions
     const maxQuestions = 9;
-    var isLobby : boolean = true;
-    var isGame : boolean = false; // false means we have ended the game (default value)
-    var isGameAnswer : boolean = false; // false = players are taking their time guessing, true = players are done guessing and the results are shown
 
     const playerCounterText = () => {
         var playerCounterText = "";
@@ -58,6 +55,7 @@ function Game() {
             if (gameState == 0){
                 // show options, reveal answer
                 setGameState(1);
+                setPlayersAnswered(0);
             }
             else{
                 // reveal answer, next question
@@ -145,22 +143,17 @@ function Game() {
 
     const pageState = () => {
         if (state == 0){
-            isLobby = true;
             return lobby()
         }
         else if (state == 1){
-            isGame = true;
             if (gameState == 0){
-                isGameAnswer = false;
                 return gameOptions();
             }
             else{
-                isGameAnswer = true;
                 return gameAnswer();
             }
         }
         else {
-            isGame = false;
             return results()
         }
     }
@@ -174,7 +167,7 @@ function Game() {
             setPlayersAnswered(playersAnswered + 1)
         }
     }
-    
+
     const footer = () => {
         return (
             <div id="front" className="pageFooter">
