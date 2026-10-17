@@ -5,20 +5,23 @@ function Game() {
     const [state, setState] = useState(Number);
     const [gameState, setGameState] = useState(Number);
     const [question, setQuestion] = useState(Number);
-    const [playerCount, setPlayerCount] = useState(20); // example value
-    const [playersAnsweredCount, setPlayersAnsweredCount] = useState(4); // example value
+    const [players, setPlayers] = useState(Number); // example value
+    const [playersAnswered, setPlayersAnswered] = useState(Number); // example value
     
     // edit later, this should be defined by/use a quiz's questions
     const maxQuestions = 9;
+    var isLobby : boolean = true;
+    var isGame : boolean = false; // false means we have ended the game (default value)
+    var isGameAnswer : boolean = false; // false = players are taking their time guessing, true = players are done guessing and the results are shown
 
     const playerCounterText = () => {
         var playerCounterText = "";
         
         if (state == 0){
-            playerCounterText = playerCount.toString();
+            playerCounterText = players.toString();
         }
         else{
-            playerCounterText = playersAnsweredCount.toString() + "/" + playerCount.toString();
+            playerCounterText = playersAnswered.toString() + "/" + players.toString();
         }
 
         return playerCounterText;
@@ -77,9 +80,16 @@ function Game() {
 
     const lobby = () => {
         return (
-            <div className="lobbyContainer">
-                <h1>Lobby</h1>
-                <p>room code</p>
+            <div>
+                <h1>Quiz name</h1>
+                <div className="lobbyRoomcodeContainer">
+                    <h2>ROOM CODE</h2>
+                    <p className="lobbyRoomCode">D 7 8 G 1 3</p>
+                    <p>(Enter the code to join the quiz)</p>
+                </div>
+                
+                <div className="lobbyPlayerStickersContainer">
+                </div>
             </div>
         );
     }
@@ -135,20 +145,57 @@ function Game() {
 
     const pageState = () => {
         if (state == 0){
+            isLobby = true;
             return lobby()
         }
         else if (state == 1){
-            // game
+            isGame = true;
             if (gameState == 0){
+                isGameAnswer = false;
                 return gameOptions();
             }
             else{
+                isGameAnswer = true;
                 return gameAnswer();
             }
         }
         else {
+            isGame = false;
             return results()
         }
+    }
+
+    const devAddPlayer = () => {
+        setPlayers(players + 1);
+    }
+
+    const devPlayerRandomAnswer = () => {
+        if (playersAnswered < players) {
+            setPlayersAnswered(playersAnswered + 1)
+        }
+    }
+    
+    const footer = () => {
+        return (
+            <div id="front" className="pageFooter">
+                <div className="pageFooterButton">
+                    <button onClick={devAddPlayer}>Add player</button>
+                </div>
+                
+                <div className="pageFooterButton">
+                    <button onClick={devPlayerRandomAnswer}>Add Random Player Answer</button>
+                </div>
+
+                <div className="playerCounter">
+                    <img src="/elements/game/player-count-icon.svg" width="20px"/>
+                    {playerCounterText()}
+                </div>
+
+                <div className="pageButton">
+                    <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-button-advance.svg" width="50px"/></button>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -157,15 +204,7 @@ function Game() {
                 {pageState()}
             </div>
             
-            <div id="front" className="pageFooter">
-                <div className="playerCounter">
-                    <img src="/elements/game/player-count-icon.svg" width="20px"/>
-                    {playerCounterText()}
-                </div>
-                <div className="pageButton">
-                    <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-button-advance.svg" width="50px"/></button>
-                </div>
-            </div>
+            {footer()}
         </div>
     );
 }
