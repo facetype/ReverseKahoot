@@ -78,7 +78,7 @@ function Game() {
 
     const lobby = () => {
         return (
-            <div>
+            <div className="lobbyContainer">
                 <h1>Quiz name</h1>
                 <div className="lobbyRoomcodeContainer">
                     <h2>ROOM CODE</h2>
