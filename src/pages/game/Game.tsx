@@ -134,22 +134,40 @@ function Game() {
                 </div>
 
                 <div id="front" style={{flex:'1'}}>
-                    <h1>Winner winner chicken dinner</h1>
-                    <p>yay</p>
+                    <h1>FINAL RESULTS</h1>
+                    <p>The winners of today's quiz are...</p>
                     <div className="gameResultsQuizWinnersContainer">
-                        <div className="gameResultsFirstPlaceContainer">
-                            <img src="/elements/game/win_badge_gold.svg" width="30px"/>
-                            <p>Player 1</p>
-                        </div>
-                        
                         <div className="gameResultsSecondPlaceContainer">
                             <img src="/elements/game/win_badge_silver.svg" width="30px"/>
-                            <p>Player 2</p>
+                            <p>[Insert Sticker]</p>
+                            <div id="front" className="gameResultsNameplateContainer">
+                                <p>Player 2</p>
+                            </div>
+                            <div id="back" className="gameResultsSilverPodium">
+                                <img src="/elements/game/silver-podium.svg" width="300px"/>
+                            </div>
+                        </div>
+                        
+                        <div className="gameResultsFirstPlaceContainer">
+                            <img src="/elements/game/win_badge_gold.svg" width="30px"/>
+                            <p>[Insert Sticker]</p>
+                            <div id="front" className="gameResultsNameplateContainer">
+                                <p>Player 1</p>
+                            </div>
+                            <div id="back" className="gameResultsGoldPodium">
+                                <img src="/elements/game/gold-podium.svg" width="300px"/>
+                            </div>
                         </div>
                         
                         <div className="gameResultsThirdPlaceContainer">
                             <img src="/elements/game/win_badge_bronze.svg" width="30px"/>
-                            <p>Player 3</p>
+                            <p>[Insert Sticker]</p>
+                            <div id="front" className="gameResultsNameplateContainer">
+                                <p>Player 3</p>
+                            </div>
+                            <div id="back" className="gameResultsBronzePodium">
+                                <img src="/elements/game/bronze-podium.svg" width="300px"/>
+                            </div>
                         </div>
                     </div>
                 </div>

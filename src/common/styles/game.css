@@ -213,6 +213,53 @@
     cursor: auto;
 }
 
+.gameResultsQuizWinnersContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.gameResultsQuizWinnersContainer p {
+    font-size: 24px;
+}
+
+.gameResultsNameplateContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: rgba(10, 10, 10, .75);
+    border-radius: 10px;
+    width: 12rem;
+    margin-bottom: -2.5rem;
+}
+
+.gameResultsFirstPlaceContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -15rem;
+}
+
+.gameResultsSecondPlaceContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -23rem;
+}
+
+.gameResultsThirdPlaceContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -23rem;
+}
+
 /* FOOTER */
 
 .pageFooter {
