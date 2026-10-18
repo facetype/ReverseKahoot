@@ -76,6 +76,7 @@ function Game() {
         //console.log("question:", question);
     }
 
+    //#region subpages & subpage components 
     const lobby = () => {
         return (
             <div className="lobbyContainer">
@@ -96,153 +97,31 @@ function Game() {
     const gameOptions = () => {
         return (
             <div className="gameContainer">
-                <h1>Game</h1>
-                <p>options</p>
-                <p>Question #{question + 1}</p>
+                <p>Bet on the correct answer that suits Question #{question + 1}...</p>
                 <div className="gameOptionsContainer">
                     <button>Option 1</button>
                     <button>Option 2</button>
                     <button>Option 3</button>
                     <button>Option 4</button>
                 </div>
+                <div className="gameHintContainer"><p>Hint: It's not Option 4</p></div>
             </div>
         );
     }
 
     const gameAnswer = () => {
         return (
-            <div className="gameAnswerContainer">
+            <div className="gameResultsContainer">
                 <div id="back" className="spiralBackground">
                     <img src="/elements/game/spiral.svg"/>
                 </div>
 
                 <div id="front" style={{flex:'1'}}>
-                    <h1>Game</h1>
-                    <p>answer</p>
-                    <p>Question #{question + 1}</p>
+                    <p>'Option 1' was correct!</p>
+                    <p>Question #{question + 1} was 'INSERT QUESTION HERE'</p>
                     <button>Option 1</button>
                 </div>
-                <div id="front" className="gameAnswerScoreboardContainer">
-                    <h3>Scoreboard</h3>
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 1</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 2</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-                    
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 3</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-                    
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 4</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-                    
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 5</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 6</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 7</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 8</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 9</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 10</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 11</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 12</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 13</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 14</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 15</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 16</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-
-                    <div className="gameAnswerScoreboardPlayerContainer">
-                        <p>Player 17</p>
-                        <div className="gameAnswerScoreboardPlayerPointsContainer">
-                            <p>1130 pts</p>
-                        </div>
-                    </div>
-                </div>
+                {scoreboard()}
             </div>
         );
     }
@@ -254,13 +133,159 @@ function Game() {
                     <img src="/elements/game/spiral.svg"/>
                 </div>
 
-                <div id="front">
+                <div id="front" style={{flex:'1'}}>
                     <h1>Winner winner chicken dinner</h1>
                     <p>yay</p>
+                    <div className="gameResultsQuizWinnersContainer">
+                        <div className="gameResultsFirstPlaceContainer">
+                            <img src="/elements/game/win_badge_gold.svg" width="30px"/>
+                            <p>Player 1</p>
+                        </div>
+                        
+                        <div className="gameResultsSecondPlaceContainer">
+                            <img src="/elements/game/win_badge_silver.svg" width="30px"/>
+                            <p>Player 2</p>
+                        </div>
+                        
+                        <div className="gameResultsThirdPlaceContainer">
+                            <img src="/elements/game/win_badge_bronze.svg" width="30px"/>
+                            <p>Player 3</p>
+                        </div>
+                    </div>
                 </div>
+                {scoreboard()}
             </div>
         );
     }
+
+    //#region scoreboard
+    const scoreboard = () => {
+        return (
+        <div id="front" className="gameAnswerScoreboardContainer">
+            <h3>Scoreboard</h3>
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 1</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 2</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+            
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 3</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+            
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 4</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+            
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 5</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 6</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 7</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 8</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 9</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 10</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 11</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 12</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 13</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 14</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 15</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 16</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+
+            <div className="gameAnswerScoreboardPlayerContainer">
+                <p>Player 17</p>
+                <div className="gameAnswerScoreboardPlayerPointsContainer">
+                    <p>1130 pts</p>
+                </div>
+            </div>
+        </div>
+        );
+    }
+    //#endregion
+    //#endregion
 
     const pageState = () => {
         if (state == 0){
@@ -290,6 +315,8 @@ function Game() {
     }
 
     const footer = () => {
+        
+
         return (
             <div id="front" className="pageFooter">
                 <div className="pageFooterButton">
