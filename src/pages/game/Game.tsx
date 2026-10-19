@@ -8,6 +8,7 @@ function Game() {
     const [players, setPlayers] = useState(Number); // example value
     const [playersAnswered, setPlayersAnswered] = useState(Number); // example value
     const [isScoreboardOpened, setIsScoreboardOpened] = useState(false);
+    const [isShopOpened, setIsShopOpened] = useState(false);
     const stickerCollection = [
         "/elements/game/stickers/sticker-bird.svg", 
         "/elements/game/stickers/sticker-horse.svg",
@@ -214,6 +215,73 @@ function Game() {
         );
     }
 
+    const shop = () => {
+        return (
+            <div className="gameShopContainer">
+                <h3><img src="/elements/game/shop-icon.svg" width="20px"/> Shop</h3>
+                <div className="gameShopItemContainer">
+                    <div className="gameShopItemIconContainer">
+                        <img src="/elements/game/hint-icon.svg" width="20px"/>
+                    </div>
+                    <div className="gameShopItemNameContainer">
+                        <p>Hint</p>
+                    </div>
+                    <div className="gameShopItemCostContainer">
+                        100 pts
+                    </div>
+                </div>
+
+                <div className="gameShopItemContainer">
+                    <div className="gameShopItemIconContainer">
+                        <img src="/elements/game/hint-icon.svg" width="20px"/>
+                    </div>
+                    <div className="gameShopItemNameContainer">
+                        <p>Another hint</p>
+                    </div>
+                    <div className="gameShopItemCostContainer">
+                        101 pts
+                    </div>
+                </div>
+
+                <div className="gameShopItemContainer">
+                    <div className="gameShopItemIconContainer">
+                        <img src="/elements/game/hint-icon.svg" width="20px"/>
+                    </div>
+                    <div className="gameShopItemNameContainer">
+                        <p>One more hint</p>
+                    </div>
+                    <div className="gameShopItemCostContainer">
+                        103 pts
+                    </div>
+                </div>
+
+                <div className="gameShopItemContainer">
+                    <div className="gameShopItemIconContainer">
+                        <img src="/elements/game/hint-icon.svg" width="20px"/>
+                    </div>
+                    <div className="gameShopItemNameContainer">
+                        <p>Hint (50% OFF)</p>
+                    </div>
+                    <div className="gameShopItemCostContainer">
+                        50 pts
+                    </div>
+                </div>
+
+                <div className="gameShopItemContainer">
+                    <div className="gameShopItemIconContainer">
+                        <img src="/elements/game/hint-icon.svg" width="20px"/>
+                    </div>
+                    <div className="gameShopItemNameContainer">
+                        <p>Hint (-50% OFF)</p>
+                    </div>
+                    <div className="gameShopItemCostContainer">
+                        150 pts
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const pageState = () => {
         if (state == 0){
             return lobby()
@@ -231,11 +299,11 @@ function Game() {
         }
     }
 
-    const devAddPlayer = () => {
+    const AddPlayer = () => {
         setPlayers(players + 1);
     }
 
-    const devPlayerRandomAnswer = () => {
+    const AddPlayerAnswer = () => {
         if (playersAnswered < players) {
             setPlayersAnswered(playersAnswered + 1)
         }
@@ -243,6 +311,10 @@ function Game() {
 
     const toggleScoreboard = () => {
         setIsScoreboardOpened(!isScoreboardOpened);
+    }
+
+    const toggleShop = () => {
+        setIsShopOpened(!isShopOpened);
     }
 
     const footer = () => {
@@ -258,15 +330,29 @@ function Game() {
 
         return (
             <div id="front" className="pageFooter">
-                <div className="playerCounter">
-                    <button onClick={toggleScoreboard}>
-                        <img src="/elements/game/player-count-icon.svg" width="20px"/>
-                        {playerCounterText()}
-                    </button>
+                <div className="pageFooterLeftButtonsContainer">
+                    <div className="currentPointsContainer">
+                        <img src="/elements/game/points-icon.svg" width="30px"/>
+                        <p>1000 pts</p>
+                    </div>
+                    <div className="shopButton">
+                        <button onClick={toggleShop}>
+                            <img src="/elements/game/shop-icon.svg" width="30px"/>
+                        </button>
+                    </div>
                 </div>
 
-                <div className="pageButton">
-                    <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
+                <div className="pageFooterRightButtonsContainer">
+                    <div className="playerCounter">
+                        <button onClick={toggleScoreboard}>
+                            <img src="/elements/game/player-count-icon.svg" width="20px"/>
+                            {playerCounterText()}
+                        </button>
+                    </div>
+
+                    <div className="pageButton">
+                        <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
+                    </div>
                 </div>
             </div>
         );
@@ -275,6 +361,7 @@ function Game() {
     return (
         <div className="pageContainer">
             <div className="gameStateContainer">
+                {isShopOpened && shop()}
                 {pageState()}
                 {isScoreboardOpened && scoreboard()}
             </div>
