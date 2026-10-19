@@ -331,14 +331,18 @@ function Game() {
         return (
             <div id="front" className="pageFooter">
                 <div className="pageFooterLeftButtonsContainer">
-                    <div className="currentPointsContainer">
-                        <img src="/elements/game/points-icon.svg" width="30px"/>
-                        <p>1000 pts</p>
-                    </div>
                     <div className="shopButton">
                         <button onClick={toggleShop}>
                             <img src="/elements/game/shop-icon.svg" width="30px"/>
+                            <p>Shop</p>
                         </button>
+                    </div>
+                </div>
+
+                <div className="pageFooterMiddleButtonsContainer">
+                    <div className="currentPointsContainer">
+                        <img src="/elements/game/points-icon.svg" width="30px"/>
+                        <p>1000 pts</p>
                     </div>
                 </div>
 
