@@ -349,7 +349,7 @@ function Game() {
                 </div>
 
                 <div className="pageButton">
-                    <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-button-advance.svg" width="50px"/></button>
+                    <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
                 </div>
             </div>
         );
