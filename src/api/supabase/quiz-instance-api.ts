@@ -1,6 +1,52 @@
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from './client.ts';
 
+export type GamePhase = 'lobby' | 'question' | 'reveal' | 'finished';
+
+// One player's line on the leaderboard. wager and pointsWon refer to the question
+// that was just revealed (zero in the lobby and for players who did not bet).
+export interface PlayerStanding {
+    userId: string;
+    nickname: string;
+    points: number;
+    wager: number;
+    pointsWon: number;
+}
+
+// The open question as everyone sees it: the clue ("text") and the four candidate
+// questions. Which option is correct is only sent in the reveal.
+export interface GameQuestion {
+    questionId: number;
+    index: number;
+    total: number;
+    text: string;
+    options: { answerId: number; text: string }[];
+    hints: { hintId: number; cost: number }[];
+}
+
+export interface GameReveal {
+    questionId?: number;
+    correctAnswerId?: number;
+    // Keyed by answerId.
+    betCounts?: Record<string, number>;
+    standings: PlayerStanding[];
+}
+
+export interface GameState {
+    phase: GamePhase;
+    questionStartedAt: string | null;
+    currentQuestion: GameQuestion | null;
+    lastReveal: GameReveal | null;
+}
+
+// The caller's private view of the open question.
+export interface PlayerState {
+    nickname: string;
+    points: number;
+    bet: { answerId: number; wager: number } | null;
+    hints: { hintId: number; text: string; cost: number }[];
+}
+
 // One live game session, as the frontend needs it. The edge functions return the
 // full row for signed-in callers (or a trimmed view); both are normalised here.
 export interface QuizInstanceSession {
@@ -10,6 +56,8 @@ export interface QuizInstanceSession {
     joinCode: string;
     isStarted: boolean;
     attendingPlayers: string[];
+    players: PlayerStanding[];
+    game: GameState;
     // Private realtime topic the host and players subscribe to.
     channel: string;
 }
@@ -71,6 +119,11 @@ interface RawInstance {
     joinCode?: string;
     isStarted?: boolean | null;
     attendingPlayers?: string[] | null;
+    players?: PlayerStanding[] | null;
+    phase?: GamePhase | null;
+    questionStartedAt?: string | null;
+    currentQuestion?: GameQuestion | null;
+    lastReveal?: GameReveal | null;
     channel?: string;
 }
 
@@ -84,6 +137,13 @@ function normalize(row: RawInstance): QuizInstanceSession {
         joinCode: row.joinCode ?? '',
         isStarted: row.isStarted ?? false,
         attendingPlayers: row.attendingPlayers ?? [],
+        players: row.players ?? [],
+        game: {
+            phase: row.phase ?? 'lobby',
+            questionStartedAt: row.questionStartedAt ?? null,
+            currentQuestion: row.currentQuestion ?? null,
+            lastReveal: row.lastReveal ?? null,
+        },
         channel: row.channel ?? `quiz-instance:${instanceId}`,
     };
 }
@@ -95,9 +155,10 @@ export async function createQuizInstance(quizId: number): Promise<QuizInstanceSe
 }
 
 // Joins the lobby with the given code, adding the caller to the player list.
-export async function joinQuizInstance(joinCode: string): Promise<JoinResult> {
+// The nickname is ignored when the caller has already joined.
+export async function joinQuizInstance(joinCode: string, nickname: string): Promise<JoinResult> {
     await ensureSession();
-    const row = await invoke<RawInstance & { alreadyJoined?: boolean }>('JoinQuizInstance', { joinCode });
+    const row = await invoke<RawInstance & { alreadyJoined?: boolean }>('JoinQuizInstance', { joinCode, nickname });
     return { ...normalize(row), alreadyJoined: Boolean(row.alreadyJoined) };
 }
 
@@ -107,28 +168,70 @@ export async function startQuizInstance(instanceId: string): Promise<QuizInstanc
     return normalize(await invoke<RawInstance>('StartQuizInstance', { instanceId }));
 }
 
-// Reads a lobby directly (used after a reload). RLS lets the host and the joined
-// players read their own instance row.
+// Reads a game directly (after a reload, or to catch up once the realtime channel
+// connects). RLS lets the host and the joined players read their own instance
+// row and its players.
 export async function getQuizInstance(instanceId: string): Promise<QuizInstanceSession> {
     const client = configured();
     const { data, error } = await client
         .from('QuizInstance')
-        .select('id, quizId, hostId, joinCode, isStarted, attendingPlayers')
+        .select('id, quizId, hostId, joinCode, isStarted, attendingPlayers, gameId, phase, questionStartedAt, currentQuestion, lastReveal')
         .eq('id', instanceId)
         .maybeSingle();
     if (error) throw error;
     if (!data) throw new Error('This game could not be found.');
-    return normalize(data as RawInstance);
+
+    let players: PlayerStanding[] = [];
+    if (data.gameId != null) {
+        const { data: rows, error: playersError } = await client
+            .from('GamePlayer')
+            .select('userId, playerName, finalPoints')
+            .eq('gameId', data.gameId)
+            .order('playerId');
+        if (playersError) throw playersError;
+        players = (rows ?? []).map(p => ({
+            userId: p.userId,
+            nickname: p.playerName,
+            points: p.finalPoints,
+            wager: 0,
+            pointsWon: 0,
+        }));
+    }
+    return normalize({ ...(data as RawInstance), players });
+}
+
+// The host moves the game one step. fromPhase is the phase the host is looking
+// at; if the game has already moved on, the server leaves it as it is.
+export async function advanceGame(instanceId: string, fromPhase: GamePhase): Promise<GameState> {
+    return invoke<GameState>('AdvanceQuizInstance', { instanceId, fromPhase });
+}
+
+export async function placeBet(instanceId: string, answerId: number, wager: number): Promise<PlayerState> {
+    return invoke<PlayerState>('PlaceBet', { instanceId, answerId, wager });
+}
+
+export async function buyHint(instanceId: string, hintId: number): Promise<PlayerState> {
+    return invoke<PlayerState>('BuyHint', { instanceId, hintId });
+}
+
+export async function getPlayerState(instanceId: string): Promise<PlayerState> {
+    return invoke<PlayerState>('GetPlayerState', { instanceId });
 }
 
 export interface QuizChannelHandlers {
-    onPlayerJoined?: (players: string[]) => void;
+    onPlayerJoined?: (players: PlayerStanding[]) => void;
     onStarted?: () => void;
+    onGameState?: (state: GameState) => void;
+    onBetPlaced?: (betCount: number) => void;
+    // Called once the channel is connected (re-read state here, since events sent
+    // before that are missed) or when it fails, e.g. when RLS refuses access.
+    onSubscribed?: () => void;
+    onError?: (message: string) => void;
 }
 
 // Subscribes to the game's private realtime topic. The server broadcasts
-// "player-joined" and "game-started"; access is gated by RLS on
-// realtime.messages (see supabase/migrations).
+// "player-joined", "game-started", "game-state" and "bet-placed"; access is
+// gated by RLS on realtime.messages (see supabase/migrations).
 export function subscribeToQuizInstance(
     instanceId: string,
     handlers: QuizChannelHandlers,
@@ -139,13 +242,24 @@ export function subscribeToQuizInstance(
     });
     channel
         .on('broadcast', { event: 'player-joined' }, ({ payload }) => {
-            const players = (payload as { attendingPlayers?: string[] }).attendingPlayers ?? [];
+            const players = (payload as { players?: PlayerStanding[] }).players ?? [];
             handlers.onPlayerJoined?.(players);
         })
         .on('broadcast', { event: 'game-started' }, () => {
             handlers.onStarted?.();
         })
-        .subscribe();
+        .on('broadcast', { event: 'game-state' }, ({ payload }) => {
+            handlers.onGameState?.(payload as GameState);
+        })
+        .on('broadcast', { event: 'bet-placed' }, ({ payload }) => {
+            handlers.onBetPlaced?.((payload as { betCount?: number }).betCount ?? 0);
+        })
+        .subscribe((status, err) => {
+            if (status === 'SUBSCRIBED') handlers.onSubscribed?.();
+            else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                handlers.onError?.(err?.message ?? 'Lost the live connection to the game. Reload to reconnect.');
+            }
+        });
     return channel;
 }
 

@@ -34,6 +34,22 @@ export default {
       // The host is the signed-in caller. ctx.supabaseAdmin bypasses RLS; the
       // host id is taken from the verified JWT, never from the request body.
       const hostId = ctx.userClaims?.id ?? null;
+      if (!hostId) {
+        return Response.json({ error: "Sign in before hosting a game." }, { status: 401 });
+      }
+
+      // The permanent record that players and bets hang off. The live instance
+      // below expires after 24 hours; this row is kept.
+      const { data: game, error: gameError } = await ctx.supabaseAdmin
+        .from("GameHistory")
+        .insert({ quizId, userId: hostId, playedAt: new Date().toISOString() })
+        .select("gameId")
+        .single();
+
+      if (gameError) {
+        const status = gameError.code === "23503" ? 404 : 500; // 23503 = quizId doesn't exist
+        return Response.json({ error: gameError.message }, { status });
+      }
 
       for (let attempt = 0; attempt < 5; attempt++) {
         const { data, error } = await ctx.supabaseAdmin
@@ -45,6 +61,7 @@ export default {
             attendingPlayers: [],
             createdAt: new Date().toISOString(),
             hostId,
+            gameId: game.gameId,
             // join() refuses anyone once the host has started the game.
             isStarted: false,
           })

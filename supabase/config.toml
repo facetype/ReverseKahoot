@@ -17,3 +17,19 @@ entrypoint = "./functions/JoinQuizInstance/JoinQuizInstance.ts"
 [functions.StartQuizInstance]
 verify_jwt = true
 entrypoint = "./functions/StartQuizInstance/StartQuizInstance.ts"
+
+[functions.AdvanceQuizInstance]
+verify_jwt = true
+entrypoint = "./functions/AdvanceQuizInstance/AdvanceQuizInstance.ts"
+
+[functions.PlaceBet]
+verify_jwt = true
+entrypoint = "./functions/PlaceBet/PlaceBet.ts"
+
+[functions.BuyHint]
+verify_jwt = true
+entrypoint = "./functions/BuyHint/BuyHint.ts"
+
+[functions.GetPlayerState]
+verify_jwt = true
+entrypoint = "./functions/GetPlayerState/GetPlayerState.ts"
