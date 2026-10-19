@@ -230,9 +230,9 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    background-color: rgba(10, 10, 10, .75);
+    background-color: rgba(10, 10, 10, .5);
     border-radius: 10px;
-    width: 12rem;
+    width: 13rem;
     margin-bottom: -2.5rem;
 }
 
