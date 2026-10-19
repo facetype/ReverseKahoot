@@ -241,7 +241,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: -15rem;
+    margin-bottom: -16rem;
 }
 
 .gameResultsSecondPlaceContainer {
@@ -257,7 +257,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: -23rem;
+    margin-bottom: -29rem;
 }
 
 /* FOOTER */
