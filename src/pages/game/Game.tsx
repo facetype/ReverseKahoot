@@ -7,6 +7,7 @@ function Game() {
     const [question, setQuestion] = useState(Number);
     const [players, setPlayers] = useState(Number); // example value
     const [playersAnswered, setPlayersAnswered] = useState(Number); // example value
+    const [isScoreboardOpened, setIsScoreboardOpened] = useState(false);
     const stickerCollection = [
         "/elements/game/stickers/sticker-bird.svg", 
         "/elements/game/stickers/sticker-horse.svg",
@@ -78,7 +79,7 @@ function Game() {
         //console.log("game state:", gameState);
         //console.log("question:", question);
     }
-    
+
     const lobby = () => {
         return (
             <div className="lobbyContainer">
@@ -118,12 +119,11 @@ function Game() {
                     <img src="/elements/game/spiral.svg"/>
                 </div>
 
-                <div id="front" style={{flex:'1'}}>
+                <div id="front">
                     <p>'Option 1' was correct!</p>
                     <p>Question #{question + 1} was 'INSERT QUESTION HERE'</p>
                     <button>Option 1</button>
                 </div>
-                {scoreboard()}
             </div>
         );
     }
@@ -173,7 +173,6 @@ function Game() {
                         </div>
                     </div>
                 </div>
-                {scoreboard()}
             </div>
         );
     }
@@ -236,20 +235,28 @@ function Game() {
         }
     }
 
+    const toggleScoreboard = () => {
+        setIsScoreboardOpened(!isScoreboardOpened);
+    }
+
     const footer = () => {
+        /*
+        <div className="pageFooterButton">
+            <button onClick={devAddPlayer}>Add player</button>
+        </div>
+        
+        <div className="pageFooterButton">
+            <button onClick={devPlayerRandomAnswer}>Add Random Player Answer</button>
+        </div>
+        */
+
         return (
             <div id="front" className="pageFooter">
-                <div className="pageFooterButton">
-                    <button onClick={devAddPlayer}>Add player</button>
-                </div>
-                
-                <div className="pageFooterButton">
-                    <button onClick={devPlayerRandomAnswer}>Add Random Player Answer</button>
-                </div>
-
                 <div className="playerCounter">
-                    <img src="/elements/game/player-count-icon.svg" width="20px"/>
-                    {playerCounterText()}
+                    <button onClick={toggleScoreboard}>
+                        <img src="/elements/game/player-count-icon.svg" width="20px"/>
+                        {playerCounterText()}
+                    </button>
                 </div>
 
                 <div className="pageButton">
@@ -263,6 +270,7 @@ function Game() {
         <div className="pageContainer">
             <div className="gameStateContainer">
                 {pageState()}
+                {isScoreboardOpened && scoreboard()}
             </div>
             
             {footer()}
