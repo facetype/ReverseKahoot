@@ -1,9 +1,20 @@
 .navbar {
   display: flex;
-  justify-content: flex-end;
+  position: sticky;
+  top: 0;
+  height: 1rem;
   gap: 1.5rem;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, .5);
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar:hover {
+  background-color: rgba(0, 0, 0, 1);
+  transition: all 0.3s ease-in-out;
 }
 
 .navbar-host {
@@ -20,4 +31,19 @@
 .navbar-host:hover,
 .navbar-host:focus-visible {
   color: var(--text-h);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: -1rem;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
+  gap: 1.5rem;
 }

@@ -13,13 +13,17 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-      {session
-          ? <>
-              <Link className="navbar-host" to="/">Host Quiz</Link>
-              <Link className="navbar-host" to="/quizzes">Search Quiz</Link>
-              <button className="navbar-host" type="button" onClick={handleLogOut}>Log out</button>
-          </>
-          : <a className="navbar-host" href="/login/">Sign in</a>}
+        <Link className="navbar-left" to="/">
+          <img className="favicon" src='/favicon.svg' width="30px" height="30px"/>
+        </Link>
+      <div className="navbar-right">
+        {session
+            ? <>
+                <Link className="navbar-host" to="/quizzes">Quizzes</Link>
+                <button className="navbar-host" type="button" onClick={handleLogOut}>Log out</button>
+            </>
+            : <a className="navbar-host" href="/login/">Sign in</a>}
+      </div>
     </div>
   );
 };
