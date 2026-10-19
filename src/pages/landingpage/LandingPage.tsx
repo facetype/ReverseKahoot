@@ -22,7 +22,11 @@ function LandingPage() {
         setMessage(null);
         try {
             const instance = await joinQuizInstance(code);
-            navigate(`/lobby/${instance.instanceId}`, { state: { instance, isHost: false } });
+            // Members who come back after the game started (alreadyJoined with
+            // isStarted) reconnect straight into the game; new players land in
+            // the lobby.
+            const target = instance.isStarted ? `/game/${instance.instanceId}` : `/lobby/${instance.instanceId}`;
+            navigate(target, { state: { instance, isHost: false } });
         } catch (err: unknown) {
             setMessage(err instanceof Error ? err.message : 'Could not join the game.');
         } finally {

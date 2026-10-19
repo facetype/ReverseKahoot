@@ -1,5 +1,5 @@
-import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from './client.ts';
+import { ensureSession, invoke } from './functions.ts';
 
 // One live game session, as the frontend needs it. The edge functions return the
 // full row for signed-in callers (or a trimmed view); both are normalised here.
@@ -15,52 +15,9 @@ export interface QuizInstanceSession {
 }
 
 export interface JoinResult extends QuizInstanceSession {
+    // True when the caller was already a member: nothing changed on the row.
+    // This is also what a reconnect after the game started looks like.
     alreadyJoined: boolean;
-}
-
-function configured() {
-    if (!supabase) throw new Error('Supabase is not configured.');
-    return supabase;
-}
-
-// Players do not need an account: the edge functions key off the JWT, so sign the
-// caller in anonymously when there is no session yet. No-op when already signed in.
-export async function ensureSession(): Promise<string> {
-    const client = configured();
-    const { data } = await client.auth.getSession();
-    if (data.session) return data.session.user.id;
-
-    const { data: anon, error } = await client.auth.signInAnonymously();
-    if (error || !anon.user) {
-        throw new Error(
-            error?.message && /anonymous/i.test(error.message)
-                ? 'Guest join is disabled; sign in to join a game.'
-                : error?.message ?? 'Could not start a guest session.',
-        );
-    }
-    return anon.user.id;
-}
-
-// Edge functions return { error } with a non-2xx status; supabase-js hides the
-// body inside error.context, so read it to surface the real message.
-async function errorMessage(error: unknown): Promise<string> {
-    const context = (error as { context?: Response }).context;
-    if (context && typeof context.json === 'function') {
-        try {
-            const body = (await context.json()) as { error?: unknown };
-            if (typeof body?.error === 'string') return body.error;
-        } catch {
-            // fall through to the generic message
-        }
-    }
-    return error instanceof Error ? error.message : 'The request failed.';
-}
-
-async function invoke<T>(name: string, body: Record<string, unknown>): Promise<T> {
-    const client = configured();
-    const { data, error } = await client.functions.invoke(name, { body });
-    if (error) throw new Error(await errorMessage(error));
-    return data as T;
 }
 
 interface RawInstance {
@@ -95,6 +52,8 @@ export async function createQuizInstance(quizId: number): Promise<QuizInstanceSe
 }
 
 // Joins the lobby with the given code, adding the caller to the player list.
+// Members of a started game get their instance back (alreadyJoined: true),
+// which is the reconnect path; strangers are turned away with a 409.
 export async function joinQuizInstance(joinCode: string): Promise<JoinResult> {
     await ensureSession();
     const row = await invoke<RawInstance & { alreadyJoined?: boolean }>('JoinQuizInstance', { joinCode });
@@ -110,8 +69,8 @@ export async function startQuizInstance(instanceId: string): Promise<QuizInstanc
 // Reads a lobby directly (used after a reload). RLS lets the host and the joined
 // players read their own instance row.
 export async function getQuizInstance(instanceId: string): Promise<QuizInstanceSession> {
-    const client = configured();
-    const { data, error } = await client
+    if (!supabase) throw new Error('Supabase is not configured.');
+    const { data, error } = await supabase
         .from('QuizInstance')
         .select('id, quizId, hostId, joinCode, isStarted, attendingPlayers')
         .eq('id', instanceId)
@@ -121,34 +80,11 @@ export async function getQuizInstance(instanceId: string): Promise<QuizInstanceS
     return normalize(data as RawInstance);
 }
 
-export interface QuizChannelHandlers {
-    onPlayerJoined?: (players: string[]) => void;
-    onStarted?: () => void;
-}
-
-// Subscribes to the game's private realtime topic. The server broadcasts
-// "player-joined" and "game-started"; access is gated by RLS on
-// realtime.messages (see supabase/migrations).
-export function subscribeToQuizInstance(
-    instanceId: string,
-    handlers: QuizChannelHandlers,
-): RealtimeChannel | null {
-    if (!supabase) return null;
-    const channel = supabase.channel(`quiz-instance:${instanceId}`, {
-        config: { private: true },
-    });
-    channel
-        .on('broadcast', { event: 'player-joined' }, ({ payload }) => {
-            const players = (payload as { attendingPlayers?: string[] }).attendingPlayers ?? [];
-            handlers.onPlayerJoined?.(players);
-        })
-        .on('broadcast', { event: 'game-started' }, () => {
-            handlers.onStarted?.();
-        })
-        .subscribe();
-    return channel;
-}
-
-export function unsubscribeFromQuizInstance(channel: RealtimeChannel | null): void {
-    if (supabase && channel) void supabase.removeChannel(channel);
+// True when the user is the host of the instance or is on its player list.
+export function isQuizInstanceMember(
+    instance: QuizInstanceSession,
+    userId: string | null | undefined,
+): boolean {
+    if (!userId) return false;
+    return instance.hostId === userId || instance.attendingPlayers.includes(userId);
 }

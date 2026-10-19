@@ -17,3 +17,7 @@ entrypoint = "./functions/JoinQuizInstance/JoinQuizInstance.ts"
 [functions.StartQuizInstance]
 verify_jwt = true
 entrypoint = "./functions/StartQuizInstance/StartQuizInstance.ts"
+
+[functions.SendQuizInstanceEvent]
+verify_jwt = true
+entrypoint = "./functions/SendQuizInstanceEvent/SendQuizInstanceEvent.ts"

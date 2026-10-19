@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useSession } from '@/pages/auth/useSession';
 import {
     getQuizInstance,
     startQuizInstance,
-    subscribeToQuizInstance,
-    unsubscribeFromQuizInstance,
     type QuizInstanceSession,
 } from '@/api/supabase/quiz-instance-api';
+import {
+    subscribeToQuizInstance,
+    unsubscribeFromQuizInstance,
+} from '@/api/supabase/realtime-api';
 import Navbar from '@/common/components/navbar/navbar';
 import '@/common/styles/quiz.css';
 
@@ -20,6 +22,7 @@ interface LobbyNavState {
 function Lobby() {
     const { instanceId = '' } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
     const navState = (location.state as LobbyNavState | null) ?? null;
     const { session } = useSession();
 
@@ -29,17 +32,25 @@ function Lobby() {
     const [error, setError] = useState<string | null>(null);
     const [starting, setStarting] = useState(false);
 
+    // Where the game itself lives once the lobby closes.
+    const gamePath = `/game/${instanceId}`;
+
     // Recover the lobby after a reload: the navigation state is gone, so read the
     // row. RLS allows the host and the joined players to read their own instance.
+    // If the game already started (host or player returning late) reconnect
+    // straight into the game page.
     useEffect(() => {
         if (instance || !instanceId) return;
         let cancelled = false;
         getQuizInstance(instanceId)
             .then(row => {
-                if (!cancelled) {
-                    setInstance(row);
-                    setLoading(false);
+                if (cancelled) return;
+                if (row.isStarted) {
+                    navigate(gamePath, { replace: true });
+                    return;
                 }
+                setInstance(row);
+                setLoading(false);
             })
             .catch((e: unknown) => {
                 if (!cancelled) {
@@ -50,18 +61,19 @@ function Lobby() {
         return () => {
             cancelled = true;
         };
-    }, [instance, instanceId]);
+    }, [instance, instanceId, navigate, gamePath]);
 
-    // Subscribe to the game's realtime topic while we are in the lobby.
+    // Subscribe to the game's realtime topic while we are in the lobby. When
+    // the host starts the game everyone is sent into it.
     useEffect(() => {
         if (!instanceId) return;
         const channel = subscribeToQuizInstance(instanceId, {
             onPlayerJoined: players =>
                 setInstance(prev => (prev ? { ...prev, attendingPlayers: players } : prev)),
-            onStarted: () => setInstance(prev => (prev ? { ...prev, isStarted: true } : prev)),
+            onStarted: () => navigate(gamePath, { replace: true }),
         });
         return () => unsubscribeFromQuizInstance(channel);
-    }, [instanceId]);
+    }, [instanceId, navigate, gamePath]);
 
     const isHost =
         navState?.isHost ??
@@ -72,11 +84,11 @@ function Lobby() {
         setStarting(true);
         setError(null);
         try {
-            const started = await startQuizInstance(instance.instanceId);
-            setInstance(prev => (prev ? { ...prev, isStarted: started.isStarted } : prev));
+            await startQuizInstance(instance.instanceId);
+            // The broadcast will have moved players; the host moves explicitly.
+            navigate(gamePath, { replace: true });
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Could not start the game.');
-        } finally {
             setStarting(false);
         }
     };
@@ -153,7 +165,7 @@ function Lobby() {
                     )
                     : (
                         <p className="quiz-muted center-text">
-                            {instance.isStarted ? 'The game has started.' : 'Waiting for the host to start…'}
+                            Waiting for the host to start…
                         </p>
                     )}
             </div>
