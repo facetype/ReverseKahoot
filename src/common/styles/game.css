@@ -314,12 +314,13 @@
     font: inherit;
     cursor: pointer;
     width: inherit;
-    border-radius: 15px;
+    border-radius: 10px;
     background-color: #333333;
     padding-left: 0.5rem;
+    padding-right: 0%;
     margin: 0.5rem;
     margin-left: 0;
-    margin-right: 0.25rem;
+    margin-right: 0.5rem;
     height: 3rem;
     gap: 0.65rem;
 }
