@@ -78,8 +78,7 @@ function Game() {
         //console.log("game state:", gameState);
         //console.log("question:", question);
     }
-
-    //#region subpages & subpage components 
+    
     const lobby = () => {
         return (
             <div className="lobbyContainer">
@@ -179,7 +178,6 @@ function Game() {
         );
     }
 
-    //#region scoreboard
     const scoreboard = () => {
         return (
         <div id="front" className="gameAnswerScoreboardContainer">
@@ -210,8 +208,6 @@ function Game() {
         </div>
         );
     }
-    //#endregion
-    //#endregion
 
     const pageState = () => {
         if (state == 0){
