@@ -75,6 +75,10 @@ function Game() {
             }
         }
 
+        if (state == 2) {
+            window.location.href = "/";
+        }
+
         //console.log("state:", state);
         //console.log("game state:", gameState);
         //console.log("question:", question);
