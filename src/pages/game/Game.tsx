@@ -135,9 +135,11 @@ function Game() {
                     <img src="/elements/game/spiral.svg"/>
                 </div>
 
-                <div id="front" style={{flex:'1'}}>
-                    <h1>FINAL RESULTS</h1>
-                    <p>The winners of today's quiz are...</p>
+                <div id="front">
+                    <div className="gameResultsTextContainer">
+                        <h1>FINAL RESULTS</h1>
+                        <p>The winners of today's quiz are...</p>
+                    </div>
                     <div className="gameResultsQuizWinnersContainer">
                         <div className="gameResultsSecondPlaceContainer">
                             <img id="front" src={stickerCollection[0]} width="150px"/>
