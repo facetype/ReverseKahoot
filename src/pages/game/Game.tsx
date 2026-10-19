@@ -333,8 +333,6 @@ function Game() {
     }
 
     const footer = () => {
-        
-
         return (
             <div id="front" className="pageFooter">
                 <div className="pageFooterButton">
