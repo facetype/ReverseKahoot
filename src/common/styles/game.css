@@ -166,7 +166,8 @@
     width: 95%;
     min-height: 4rem;
     flex-shrink: 0;
-    padding-left: 5%;
+    padding-left: 2%;
+    gap: 0.75rem;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -258,6 +259,15 @@
     justify-content: center;
     align-items: center;
     margin-bottom: -32rem;
+}
+
+#badge {
+    display: flex;
+    margin-right: auto;
+    margin-left: 4rem;
+    margin-bottom: auto;
+    margin-top: -4rem;
+    z-index: 3;
 }
 
 /* FOOTER */
