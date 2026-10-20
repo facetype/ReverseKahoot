@@ -36,6 +36,8 @@ function Game() {
 
     // edit later, this should be defined by/use a quiz's questions
     const maxQuestions = 9;
+    const optionIds = [1, 2, 3, 4];
+
     //#endregion
 
     //#region shop & scoreboard variables
@@ -45,6 +47,8 @@ function Game() {
     const [isShopOpened, setIsShopOpened] = useState(false);
     const [busy, setBusy] = useState(false);
     const shopItemIsPurchased = (shopItemId: string) => purchasedThisQuestion.includes(shopItemId);
+    const [removedOptions, setRemovedOptions] = useState<number[]>([]);
+    const [answerRevealed, setAnswerRevealed] = useState<boolean>(false);
     //#endregion
 
     //#region  subpages & menus
@@ -74,21 +78,31 @@ function Game() {
                     <div className="gameHintContainer"><p>Hint: It's not Option 4</p></div>
                 )}
                 <div className="gameOptionsContainer">
-                    {[1, 2, 3, 4].map(option => (
-                        <div className="gameOptionContainer" key={option}>
-                            <button
-                                className={selectedOption === option ? "selected" : ""}
-                                onClick={() => selectOption(option)}
-                                disabled={betLocked || !isPlayer()}>
-                                Option {option}
-                            </button>
-                            {selectedOption == option && badgeAmount > 0 && (
-                                <div className="gameOptionBetContainer">
-                                    <span>{badgeAmount} pts</span>
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                    {optionIds.map(option =>{
+                        const removed = removedOptions.includes(option);
+                        const revealed = answerRevealed && option === correctOption;
+                        const classes = [
+                            selectedOption === option ? "selected" : "",
+                            removed ? "removed" : "",
+                            revealed ? "revealed" : "",
+                        ].join(" ").trim();
+
+                        return (
+                            <div className="gameOptionContainer" key={option}>
+                                <button
+                                    className={classes}
+                                    onClick={() => selectOption(option)}
+                                    disabled={betLocked || !isPlayer() || removed}>
+                                    Option {option}
+                                </button>
+                                {selectedOption == option && badgeAmount > 0 && (
+                                    <div className="gameOptionBetContainer">
+                                        <span>{badgeAmount} pts</span>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
                 
                 {isPlayer() && selectedOption !== null && (
@@ -258,8 +272,8 @@ function Game() {
                 </div>
 
                 <div className="gameShopItemContainer">
-                    <button onClick={() => deductPlayerPoints("cut-options", Math.floor(playerPoints/2))}
-                            disabled={shopItemIsPurchased("cut-options")}>
+                    <button onClick={() => {if (deductPlayerPoints("cut-options", Math.floor(playerPoints/2))) shopCutOptions()}}
+                            disabled={shopItemIsPurchased("cut-options") || betLocked}>
                         <div className="gameShopItemIconContainer">
                             <img src="/elements/game/cut-options-icon.svg" width="40px"/>
                         </div>
@@ -273,8 +287,8 @@ function Game() {
                 </div>
 
                 <div className="gameShopItemContainer">
-                    <button onClick={() => deductPlayerPoints("reveal-answer", Math.floor(playerPoints*0.9))}
-                            disabled={shopItemIsPurchased("reveal-answer")}>
+                    <button onClick={() => {if (deductPlayerPoints("reveal-answer", Math.floor(playerPoints*0.9))) shopRevealCorrectOption()}}
+                            disabled={shopItemIsPurchased("reveal-answer") || betLocked}>
                         <div className="gameShopItemIconContainer">
                             <img src="/elements/game/reveal-answer-icon.svg" width="50px"/>
                         </div>
@@ -417,6 +431,8 @@ function Game() {
                 setPlacedBet(null);
                 setPlayerBet(0);
                 setBetResult(null);
+                setRemovedOptions([]);
+                setAnswerRevealed(false);
                 
                 if (question >= maxQuestions){
                     setQuestion(0);
@@ -465,9 +481,9 @@ function Game() {
         }
     }
     
-    const deductPlayerPoints = (shopItemId: string = "", cost: Number, isHint:boolean = false) => {
-        if (Math.floor(cost) > playerPoints) return;
-        if (purchasedThisQuestion.includes(shopItemId)) return;
+    const deductPlayerPoints = (shopItemId: string = "", cost: number, isHint:boolean = false): boolean => {
+        if (Math.floor(cost) > playerPoints) return false;
+        if (purchasedThisQuestion.includes(shopItemId)) return false;
 
         if (isHint) {
             setHintCost(Math.floor(hintCost*1.1));
@@ -475,6 +491,7 @@ function Game() {
 
         setPlayerPoints(Math.floor(playerPoints - cost));
         setPurchasedThisQuestion([... purchasedThisQuestion, shopItemId]);
+        return true;
     }
 
     const toggleScoreboard = () => {
@@ -487,8 +504,24 @@ function Game() {
         setIsShopOpened(!isShopOpened);
     }
 
+    const shopCutOptions = () => {
+        const wrong = optionIds.filter(o => o !== correctOption);
+        const keep = wrong[Math.floor(Math.random() * wrong.length)];
+        const removed = wrong.filter(o => o !== keep);
+        
+        setRemovedOptions(removed);
+        if (selectedOption !== null && removed.includes(selectedOption)) {
+            setSelectedOption(null);
+        }
+    }
+
+    const shopRevealCorrectOption = () => {
+        setAnswerRevealed(true);
+        //setSelectedOption(correctOption);
+    }
+
     const selectOption = (option: number) => {
-        if (betLocked || !isPlayer) return;
+        if (betLocked || !isPlayer()) return;
         setSelectedOption(option);
     }
 

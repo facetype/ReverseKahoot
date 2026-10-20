@@ -136,6 +136,16 @@
     cursor: pointer;
 }
 
+.gameOptionsContainer button.removed:disabled {
+    opacity: 0.15;
+    cursor: not-allowed;
+}
+
+.gameOptionsContainer button.revealed,
+.gameOptionsContainer button.revealed:disabled {
+    background-color: #3ddc84;
+}
+
 .gameBetContainer {
     display: flex;
     flex-direction: column;
