@@ -1,26 +1,27 @@
 import { useState, useEffect } from 'react';
 import '@/common/styles/game.css'
 
+const preloads = [
+    "/elements/game/spiral.svg",
+    "/elements/game/shop-icon.svg",
+    "/elements/game/hint-icon.svg",
+    "/elements/game/cut-options-icon.svg",
+    "/elements/game/reveal-answer-icon.svg",
+    "/elements/game/points-icon.svg",
+    "/elements/game/player-count-icon.svg",
+    "/elements/game/game-arrow-button.svg",
+    "/elements/game/win_badge_gold.svg",
+    "/elements/game/win_badge_silver.svg",
+    "/elements/game/win_badge_bronze.svg",
+    "/elements/game/gold-podium.svg",
+    "/elements/game/silver-podium.svg",
+    "/elements/game/bronze-podium.svg",
+    "/elements/game/stickers/sticker-bird.svg",
+    "/elements/game/stickers/sticker-horse.svg",
+    "/elements/game/stickers/sticker-rose.svg",
+];
+
 function Game() {
-    const preloads = [
-        "/elements/game/spiral.svg",
-        "/elements/game/shop-icon.svg",
-        "/elements/game/hint-icon.svg",
-        "/elements/game/cut-options-icon.svg",
-        "/elements/game/reveal-answer-icon.svg",
-        "/elements/game/points-icon.svg",
-        "/elements/game/player-count-icon.svg",
-        "/elements/game/game-arrow-button.svg",
-        "/elements/game/win_badge_gold.svg",
-        "/elements/game/win_badge_silver.svg",
-        "/elements/game/win_badge_bronze.svg",
-        "/elements/game/gold-podium.svg",
-        "/elements/game/silver-podium.svg",
-        "/elements/game/bronze-podium.svg",
-        "/elements/game/stickers/sticker-bird.svg",
-        "/elements/game/stickers/sticker-horse.svg",
-        "/elements/game/stickers/sticker-rose.svg",
-    ];
 
     //#region state variables
     const [state, setState] = useState<number>(0);
