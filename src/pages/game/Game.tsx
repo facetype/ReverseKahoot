@@ -5,6 +5,7 @@ function Game() {
     const [state, setState] = useState(Number);
     const [gameState, setGameState] = useState(Number);
     const [question, setQuestion] = useState(Number);
+    const [playerType, setPlayerType] = useState<"host"|"player"|"">("host");
     const [players, setPlayers] = useState(Number); // example value
     const [playersAnswered, setPlayersAnswered] = useState(Number); // example value
     const [isScoreboardOpened, setIsScoreboardOpened] = useState(false);
@@ -15,6 +16,15 @@ function Game() {
         "/elements/game/stickers/sticker-rose.svg"];
     // edit later, this should be defined by/use a quiz's questions
     const maxQuestions = 9;
+        
+    const isHost = () => playerType === "host";
+    const isPlayer = () => playerType === "player";
+        
+    const inGame = state === 1;
+    const inResults = state === 2;
+    const canUseShop = isPlayer() && inGame;
+    const canUseScoreboard = inGame;
+    const canShowScoreboard = inGame || inResults;
 
     const playerCounterText = () => {
         var playerCounterText = "";
@@ -25,7 +35,7 @@ function Game() {
         else{
             playerCounterText = playersAnswered.toString() + "/" + players.toString();
         }
-
+        
         return playerCounterText;
     }
 
@@ -68,6 +78,8 @@ function Game() {
                 
                 if (question >= maxQuestions){
                     setQuestion(0);
+                    setIsShopOpened(false);
+                    setIsScoreboardOpened(true); // show the final results in the scoreboard
                     setState(2);
                 }
                 else{
@@ -75,8 +87,7 @@ function Game() {
                 }
             }
         }
-
-        if (state == 2) {
+        else {
             window.location.href = "/";
         }
 
@@ -218,7 +229,10 @@ function Game() {
     const shop = () => {
         return (
             <div className="gameShopContainer">
-                <h3><img src="/elements/game/shop-icon.svg" width="20px"/> Shop</h3>
+                <div className="gameShopHeaderContainer">
+                    <h3><img src="/elements/game/shop-icon.svg" width="20px"/> Shop</h3>
+                    <p>Spend your points to buy an item</p>
+                </div>
                 <div className="gameShopItemContainer">
                     <div className="gameShopItemIconContainer">
                         <img src="/elements/game/hint-icon.svg" width="20px"/>
@@ -310,10 +324,12 @@ function Game() {
     }
 
     const toggleScoreboard = () => {
+        if (!canUseScoreboard) return;
         setIsScoreboardOpened(!isScoreboardOpened);
     }
 
     const toggleShop = () => {
+        if (!canUseShop) return;
         setIsShopOpened(!isShopOpened);
     }
 
@@ -331,31 +347,39 @@ function Game() {
         return (
             <div id="front" className="pageFooter">
                 <div className="pageFooterLeftButtonsContainer">
-                    <div className="shopButton">
-                        <button onClick={toggleShop}>
-                            <img src="/elements/game/shop-icon.svg" width="30px"/>
-                            <p>Shop</p>
-                        </button>
-                    </div>
+                    {canUseShop && (
+                        <div className="shopButton">
+                            <button onClick={toggleShop}>
+                                <img src="/elements/game/shop-icon.svg" width="30px"/>
+                                <p>Shop</p>
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="pageFooterMiddleButtonsContainer">
-                    <div className="currentPointsContainer">
-                        <img src="/elements/game/points-icon.svg" width="30px"/>
-                        <p>1000 pts</p>
-                    </div>
+                    {isPlayer() && (
+                        <div className="currentPointsContainer">
+                            <img src="/elements/game/points-icon.svg" width="30px"/>
+                            <p>1000 pts</p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="pageFooterRightButtonsContainer">
-                    <div className="playerCounter">
-                        <button onClick={toggleScoreboard}>
-                            <img src="/elements/game/player-count-icon.svg" width="20px"/>
-                            {playerCounterText()}
-                        </button>
-                    </div>
+                    {state != 2 && (
+                        <div className="playerCounter">
+                            <button onClick={toggleScoreboard}>
+                                <img src="/elements/game/player-count-icon.svg" width="20px"/>
+                                {playerCounterText()}
+                            </button>
+                        </div>
+                    )}
 
                     <div className="pageButton">
-                        <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
+                        {isHost() && (
+                            <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -365,9 +389,9 @@ function Game() {
     return (
         <div className="pageContainer">
             <div className="gameStateContainer">
-                {isShopOpened && shop()}
+                {canUseShop && isShopOpened && shop()}
                 {pageState()}
-                {isScoreboardOpened && scoreboard()}
+                {canShowScoreboard && isScoreboardOpened && scoreboard()}
             </div>
             
             {footer()}
