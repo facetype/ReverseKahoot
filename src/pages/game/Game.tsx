@@ -5,11 +5,14 @@ function Game() {
     const [state, setState] = useState(Number);
     const [gameState, setGameState] = useState(Number);
     const [question, setQuestion] = useState(Number);
-    const [playerType, setPlayerType] = useState<"host"|"player"|"">("host");
+    const [playerType, setPlayerType] = useState<"host"|"player"|"">("player");
     const [players, setPlayers] = useState(Number); // example value
     const [playersAnswered, setPlayersAnswered] = useState(Number); // example value
+    const [playerPoints, setPlayerPoints] = useState(1000);
+    const [hintCost, setHintCost] = useState(playerPoints*0.1); // 10% of player's starting points
     const [isScoreboardOpened, setIsScoreboardOpened] = useState(false);
     const [isShopOpened, setIsShopOpened] = useState(false);
+    const [purchasedThisQuestion, setPurchasedThisQuestion] = useState<string[]>([]);
     const stickerCollection = [
         "/elements/game/stickers/sticker-bird.svg", 
         "/elements/game/stickers/sticker-horse.svg",
@@ -19,12 +22,12 @@ function Game() {
         
     const isHost = () => playerType === "host";
     const isPlayer = () => playerType === "player";
-        
     const inGame = state === 1;
     const inResults = state === 2;
-    const canUseShop = isPlayer() && inGame;
+    const canUseShop = isPlayer() && inGame && gameState === 0;
     const canUseScoreboard = inGame;
     const canShowScoreboard = inGame || inResults;
+    const shopItemIsPurchased = (shopItemId: string) => purchasedThisQuestion.includes(shopItemId);
 
     const playerCounterText = () => {
         var playerCounterText = "";
@@ -75,6 +78,7 @@ function Game() {
             else{
                 // reveal answer, next question
                 setGameState(0);
+                setPurchasedThisQuestion([]);
                 
                 if (question >= maxQuestions){
                     setQuestion(0);
@@ -226,72 +230,76 @@ function Game() {
         );
     }
 
+    const deductPlayerPoints = (shopItemId: string, cost: number, isHint:boolean = false) => {
+        if (Math.floor(cost) > playerPoints) return;
+        if (purchasedThisQuestion.includes(shopItemId)) return;
+
+        if (isHint) {
+            setHintCost(Math.floor(hintCost + hintCost*1.1));
+        }
+
+        setPlayerPoints(Math.floor(playerPoints - cost));
+        setPurchasedThisQuestion([... purchasedThisQuestion, shopItemId]);
+    }
+
     const shop = () => {
+
+        // Hint: 100 pts (increases by 10% the more you buy a hint)
+        // Cut options in two: 50% of your current points
+        // Reveal answer: 90% of your current points
+
         return (
             <div className="gameShopContainer">
                 <div className="gameShopHeaderContainer">
+                    
                     <h3><img src="/elements/game/shop-icon.svg" width="20px"/> Shop</h3>
                     <p>Spend your points to buy an item</p>
                 </div>
                 <div className="gameShopItemContainer">
-                    <div className="gameShopItemIconContainer">
-                        <img src="/elements/game/hint-icon.svg" width="20px"/>
-                    </div>
-                    <div className="gameShopItemNameContainer">
-                        <p>Hint</p>
-                    </div>
-                    <div className="gameShopItemCostContainer">
-                        100 pts
-                    </div>
+                    <button onClick={() => deductPlayerPoints("hint", Math.floor(hintCost), true)}
+                            disabled={shopItemIsPurchased("hint") || Math.floor(hintCost) > playerPoints}>
+                        <div className="gameShopItemIconContainer">
+                            <img src="/elements/game/hint-icon.svg" width="20px"/>
+                        </div>
+                        <div className="gameShopItemNameContainer">
+                            <p>Hint</p>
+                        </div>
+                        <div className="gameShopItemCostContainer">
+                            {Math.floor(hintCost)} pts
+                        </div>
+                    </button>
                 </div>
 
                 <div className="gameShopItemContainer">
-                    <div className="gameShopItemIconContainer">
-                        <img src="/elements/game/hint-icon.svg" width="20px"/>
-                    </div>
-                    <div className="gameShopItemNameContainer">
-                        <p>Another hint</p>
-                    </div>
-                    <div className="gameShopItemCostContainer">
-                        101 pts
-                    </div>
+                    <button onClick={() => deductPlayerPoints("cut-options", Math.floor(playerPoints/2))}
+                            disabled={shopItemIsPurchased("cut-options")}>
+                        <div className="gameShopItemIconContainer">
+                            <img src="/elements/game/cut-options-icon.svg" width="40px"/>
+                        </div>
+                        <div className="gameShopItemNameContainer">
+                            <p>Cut options</p>
+                        </div>
+                        <div className="gameShopItemCostContainer">
+                            {Math.floor(playerPoints/2)} pts
+                        </div>
+                    </button>
                 </div>
 
                 <div className="gameShopItemContainer">
-                    <div className="gameShopItemIconContainer">
-                        <img src="/elements/game/hint-icon.svg" width="20px"/>
-                    </div>
-                    <div className="gameShopItemNameContainer">
-                        <p>One more hint</p>
-                    </div>
-                    <div className="gameShopItemCostContainer">
-                        103 pts
-                    </div>
+                    <button onClick={() => deductPlayerPoints("reveal-answer", Math.floor(playerPoints*0.9))}
+                            disabled={shopItemIsPurchased("reveal-answer")}>
+                        <div className="gameShopItemIconContainer">
+                            <img src="/elements/game/reveal-answer-icon.svg" width="50px"/>
+                        </div>
+                        <div className="gameShopItemNameContainer">
+                            <p>Reveal answer</p>
+                        </div>
+                        <div className="gameShopItemCostContainer">
+                            {Math.floor(playerPoints*0.9)} pts
+                        </div>
+                    </button>
                 </div>
 
-                <div className="gameShopItemContainer">
-                    <div className="gameShopItemIconContainer">
-                        <img src="/elements/game/hint-icon.svg" width="20px"/>
-                    </div>
-                    <div className="gameShopItemNameContainer">
-                        <p>Hint (50% OFF)</p>
-                    </div>
-                    <div className="gameShopItemCostContainer">
-                        50 pts
-                    </div>
-                </div>
-
-                <div className="gameShopItemContainer">
-                    <div className="gameShopItemIconContainer">
-                        <img src="/elements/game/hint-icon.svg" width="20px"/>
-                    </div>
-                    <div className="gameShopItemNameContainer">
-                        <p>Hint (-50% OFF)</p>
-                    </div>
-                    <div className="gameShopItemCostContainer">
-                        150 pts
-                    </div>
-                </div>
             </div>
         );
     }
@@ -361,7 +369,7 @@ function Game() {
                     {isPlayer() && (
                         <div className="currentPointsContainer">
                             <img src="/elements/game/points-icon.svg" width="30px"/>
-                            <p>1000 pts</p>
+                            <p>{playerPoints} pts</p>
                         </div>
                     )}
                 </div>
@@ -377,14 +385,19 @@ function Game() {
                     )}
 
                     <div className="pageButton">
-                        {isHost() && (
                             <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
-                        )}
                     </div>
                 </div>
             </div>
         );
     }
+
+    /*
+    {isHost() && (
+        <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
+    )}
+    */
+
 
     return (
         <div className="pageContainer">

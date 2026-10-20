@@ -7,7 +7,6 @@
     width: 100vw;
 }
 
-
 .gameStateContainer {
     display: flex;
     justify-content: center;
@@ -19,7 +18,6 @@
     from {rotate: 0deg;}
     to {rotate:360deg;}
 }
-
 
 #back {
     z-index: 1;
@@ -225,6 +223,33 @@
     overflow: hidden;
 }
 
+.gameShopItemContainer button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    float: left;
+    background-color: #222222;
+    font-size: 24px;
+    border-radius: 15px;
+    width: 105%;
+    min-height: 4rem;
+    flex-shrink: 0;
+    padding-left: 2%;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: none;
+}
+
+.gameShopItemContainer button:hover {
+    background-color: #333333;
+}
+
+.gameShopItemContainer button:disabled {
+    background-color: #000000;
+}
+
 .gameShopItemIconContainer {
     display: flex;
     justify-content: center;
@@ -239,7 +264,7 @@
     margin-right: auto;
     margin-left: -0.5rem;
     width: 20%;
-    height: 100%;
+    height: 4rem;
 }
 
 .gameShopItemNameContainer {
