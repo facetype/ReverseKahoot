@@ -115,6 +115,7 @@
     flex: 1 1 calc(100% - 50px);
     width: 40rem;
     gap: .25rem;
+    margin-top: 1rem;
 }
 
 .gameOptionsContainer button {
@@ -127,12 +128,64 @@
     height: 12rem;
     width: 18rem;
     background-color: #444444;
-    margin: .5rem;
+    margin: 0rem;
 }
 
 .gameOptionsContainer button:hover {
     background-color: #555555;
     cursor: pointer;
+}
+
+.gameBetContainer {
+    display: flex;
+    flex-direction: column;
+    background-color: #111111;
+    border-radius: 15px;
+    padding: 1rem;
+}
+
+.gameBetInputContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+    gap: 0.65rem;
+}
+
+.gameBetButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameBetButton button {
+    font-size: 32px;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+.gameOptionContainer {
+    position: relative;
+    margin: 0.5rem;
+}
+
+.gameOptionBetContainer {
+    position: absolute;
+    display: flex;
+    margin-left: auto;
+    top: -0.75rem;
+    right: -0.75rem;
+    z-index: 2;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #111111;
+    border-radius: 5px;
+    width: 6rem;
+    height: 2rem;
+    pointer-events: none;
 }
 
 .gameAnswerScoreboardContainer {
@@ -289,6 +342,13 @@
     width: 30%;
     min-height: 4rem;
     flex-shrink: 0;
+}
+
+/* #slider {} */
+
+#input {
+    height: 3rem;
+    font-size: 24px;
 }
 
 /* RESULTS */
