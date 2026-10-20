@@ -1,7 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '@/common/styles/game.css'
 
 function Game() {
+    const preloads = [
+        "/elements/game/spiral.svg",
+        "/elements/game/shop-icon.svg",
+        "/elements/game/hint-icon.svg",
+        "/elements/game/cut-options-icon.svg",
+        "/elements/game/reveal-answer-icon.svg",
+        "/elements/game/points-icon.svg",
+        "/elements/game/player-count-icon.svg",
+        "/elements/game/game-arrow-button.svg",
+        "/elements/game/win_badge_gold.svg",
+        "/elements/game/win_badge_silver.svg",
+        "/elements/game/win_badge_bronze.svg",
+        "/elements/game/gold-podium.svg",
+        "/elements/game/silver-podium.svg",
+        "/elements/game/bronze-podium.svg",
+        "/elements/game/stickers/sticker-bird.svg",
+        "/elements/game/stickers/sticker-horse.svg",
+        "/elements/game/stickers/sticker-rose.svg",
+    ];
+
     //#region state variables
     const [state, setState] = useState<number>(0);
     const [gameState, setGameState] = useState<number>(0);
@@ -50,6 +70,13 @@ function Game() {
     const [removedOptions, setRemovedOptions] = useState<number[]>([]);
     const [answerRevealed, setAnswerRevealed] = useState<boolean>(false);
     //#endregion
+
+    useEffect(() => {
+        preloads.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }, []);
 
     //#region  subpages & menus
     const lobby = () => {
