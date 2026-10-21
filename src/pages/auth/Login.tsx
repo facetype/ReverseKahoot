@@ -11,6 +11,7 @@ import {
 } from '@/api/supabase/profile-api.ts'
 import type { Profile } from '@/common/types'
 import './Login.css'
+import Navbar from '@/common/components/navbar/navbar';
 
 const HOME_PATH = '/'
 
@@ -200,7 +201,8 @@ function Login() {
   const showPassword = mode !== 'reset'
 
   return (
-    <div className="auth">
+    <div>    <Navbar/>
+    <div className='auth'>
     <main className="auth-card">
       {mode !== 'update-password' && (
         <div className="auth-tabs" role="tablist" aria-label="Authentication options">
@@ -287,7 +289,7 @@ function Login() {
 
       {message && <p className={`auth-message ${message.kind}`}>{message.text}</p>}
     </main>
-    </div>
+    </div></div>
   )
 }
 

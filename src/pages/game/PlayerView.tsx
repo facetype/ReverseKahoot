@@ -7,6 +7,7 @@ import {
     type GameState,
     type PlayerState,
 } from '@/api/supabase/quiz-instance-api';
+import BetSlider from './BetSlider';
 import OptionGrid from './OptionGrid';
 import Standings from './Standings';
 
@@ -205,14 +206,11 @@ function PlayerQuestion({ instanceId, question, state, remaining, onState }: Pla
                                 Your bet: {shownWager} of {maxWager} pts
                             </label>
                             <div className="game-wager">
-                                <input
-                                    type="range"
-                                    min={0}
-                                    max={maxWager}
+                                <BetSlider
                                     value={shownWager}
-                                    onChange={e => setWager(Number(e.target.value))}
-                                    aria-label="Bet amount slider"
-                                    disabled={busy || maxWager === 0}
+                                    max={maxWager}
+                                    onChange={setWager}
+                                    disabled={busy}
                                 />
                                 <input
                                     id="game-wager"

@@ -145,11 +145,76 @@ button.game-option:disabled {
   align-items: center;
 }
 
-.game-wager input[type="range"] {
+.game-wager {
+  align-items: start;
+}
+
+.game-wager input[type="number"] {
+  align-self: start;
+}
+
+/* Slider with tick marks. Ticks are visual only: the range input still moves in
+   steps of 1, so any whole number can be picked. */
+.bet-slider {
+  position: relative;
+  min-width: 0;
+  padding-bottom: 1.6rem;
+}
+
+.bet-slider input[type="range"] {
+  display: block;
   accent-color: var(--accent);
   width: 100%;
   min-width: 0;
   margin: 0;
+  height: 1.5rem;
+}
+
+.bet-slider-ticks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1.35rem;
+  height: 1.5rem;
+  pointer-events: none;
+}
+
+.bet-slider-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.bet-slider-mark {
+  width: 2px;
+  height: 0.45rem;
+  border-radius: 1px;
+  background: var(--border);
+}
+
+.bet-slider-tick:hover .bet-slider-mark,
+.bet-slider-tick-active .bet-slider-mark {
+  background: var(--accent);
+}
+
+.bet-slider-tick-active {
+  color: var(--text-h);
+}
+
+.bet-slider-tick:disabled {
+  cursor: not-allowed;
 }
 
 .game-wager input[type="number"] {
