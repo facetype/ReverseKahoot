@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useSession } from '@/pages/auth/useSession';
 import {
     getQuizInstance,
@@ -20,6 +20,7 @@ interface LobbyNavState {
 function Lobby() {
     const { instanceId = '' } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
     const navState = (location.state as LobbyNavState | null) ?? null;
     const { session } = useSession();
 
@@ -52,13 +53,22 @@ function Lobby() {
         };
     }, [instance, instanceId]);
 
-    // Subscribe to the game's realtime topic while we are in the lobby.
+    // Subscribe to the game's realtime topic while we are in the lobby. Joins sent
+    // before the channel connected are missed, so re-read the lobby once it has.
     useEffect(() => {
         if (!instanceId) return;
         const channel = subscribeToQuizInstance(instanceId, {
             onPlayerJoined: players =>
-                setInstance(prev => (prev ? { ...prev, attendingPlayers: players } : prev)),
+                setInstance(prev => (prev ? { ...prev, players } : prev)),
             onStarted: () => setInstance(prev => (prev ? { ...prev, isStarted: true } : prev)),
+            onSubscribed: () => {
+                getQuizInstance(instanceId)
+                    .then(row => setInstance(prev => (prev ? { ...prev, players: row.players, isStarted: row.isStarted } : row)))
+                    .catch(() => {
+                        // The lobby already shows what it has; the next event refreshes it.
+                    });
+            },
+            onError: setError,
         });
         return () => unsubscribeFromQuizInstance(channel);
     }, [instanceId]);
@@ -72,8 +82,8 @@ function Lobby() {
         setStarting(true);
         setError(null);
         try {
-            const started = await startQuizInstance(instance.instanceId);
-            setInstance(prev => (prev ? { ...prev, isStarted: started.isStarted } : prev));
+            await startQuizInstance(instance.instanceId);
+            navigate(`/game/${instance.instanceId}`, { state: { quizTitle } });
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Could not start the game.');
         } finally {
@@ -104,7 +114,12 @@ function Lobby() {
         );
     }
 
-    const players = instance.attendingPlayers;
+    // Everyone moves to the game page once the host has started.
+    if (instance.isStarted) {
+        return <Navigate to={`/game/${instance.instanceId}`} state={{ quizTitle }} replace />;
+    }
+
+    const players = instance.players;
     const me = session?.user.id ?? null;
 
     return (
@@ -114,9 +129,9 @@ function Lobby() {
                 <h1 className="center-text">{quizTitle ?? 'Lobby'}</h1>
                 <br />
                 <section className="quiz-hosted" role="status" aria-label="Game code">
-                    <p className="quiz-muted">Share this code with players</p>
+                    {isHost && <p className="quiz-muted">Share this code with players</p>}
                     <p className="quiz-code">{instance.joinCode}</p>
-                    <p className="quiz-muted">Players enter it on the home page to join.</p>
+                    {isHost && <p className="quiz-muted">Players enter it on the home page to join.</p>}
                 </section>
 
                 {error && <p className="quiz-error center-text">{error}</p>}
@@ -126,12 +141,11 @@ function Lobby() {
                     ? <p className="quiz-muted center-text">No one has joined yet.</p>
                     : (
                         <ul className="quiz-list">
-                            {players.map((id, index) => (
-                                <li key={id} className="quiz-list-item">
+                            {players.map(player => (
+                                <li key={player.userId} className="quiz-list-item">
                                     <span>
-                                        Player {index + 1}
-                                        {id === me ? ' (you)' : ''}
-                                        {id === instance.hostId ? ' · host' : ''}
+                                        {player.nickname}
+                                        {player.userId === me ? ' (you)' : ''}
                                     </span>
                                 </li>
                             ))}
@@ -145,15 +159,15 @@ function Lobby() {
                                 className="quiz-button"
                                 type="button"
                                 onClick={handleStart}
-                                disabled={starting || instance.isStarted}
+                                disabled={starting || players.length === 0}
                             >
-                                {instance.isStarted ? 'Game started' : starting ? 'Starting…' : 'Start game'}
+                                {starting ? 'Starting…' : 'Start game'}
                             </button>
                         </p>
                     )
                     : (
                         <p className="quiz-muted center-text">
-                            {instance.isStarted ? 'The game has started.' : 'Waiting for the host to start…'}
+                            Waiting for the host to start…
                         </p>
                     )}
             </div>

@@ -1,38 +1,66 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { createQuiz, getCategories, getQuiz, updateQuiz, deleteQuiz } from '@/api/supabase/quiz-api';
-import type { Category, QuizDraft, QuestionDraft } from '@/common/types';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { deleteQuiz, getCategories, getQuiz, saveQuiz } from '@/api/supabase/quiz-api';
+import type { AnswerDraft, Category, HintDraft, QuestionDraft, QuizDraft } from '@/common/types';
+import {
+    DEFAULT_HINT_COST,
+    MAX_ANSWERS,
+    MAX_HINTS,
+    MAX_HINT_COST,
+    MAX_QUESTIONS,
+    MAX_TEXT_LENGTH,
+    MAX_TITLE_LENGTH,
+    MIN_ANSWERS,
+} from '@/common/constants/game';
 import { useSession } from '@/pages/auth/useSession';
 import '@/common/styles/quiz.css';
 import Navbar from '@/common/components/navbar/navbar';
 
-const emptyQuestion = (): QuestionDraft => ({
+// Terms in this editor match the game. The question is hidden from players until
+// the round ends; they pick one of the answers, and may pay for hints to see more.
+
+// Rows get a client-side key so React keeps the right inputs when one is removed.
+type EditorQuestion = QuestionDraft & { key: string };
+
+const emptyQuestion = (): EditorQuestion => ({
+    key: crypto.randomUUID(),
     questionText: '',
-    answers: Array.from({ length: 4 }, () => ({ answerText: '', isCorrect: false }))
-})
+    answers: Array.from({ length: MAX_ANSWERS }, () => ({ answerText: '', isCorrect: false })),
+    hints: [],
+});
+
+function EditorShell({ children }: { children: React.ReactNode }) {
+    return (
+        <div>
+            <Navbar />
+            <div className="quiz-page">{children}</div>
+        </div>
+    );
+}
 
 function QuizEditor() {
     const { quizId } = useParams(); // undefined => create
     const navigate = useNavigate();
     const { session, loading: sessionLoading } = useSession();
     const [categories, setCategories] = useState<Category[]>([]);
-    const [draft, setDraft] = useState<QuizDraft>({
-        quizTitle: '', categoryId: null, questions: [emptyQuestion()],
-    });
+    const [title, setTitle] = useState('');
+    const [categoryId, setCategoryId] = useState<number | null>(null);
+    const [questions, setQuestions] = useState<EditorQuestion[]>(() => [emptyQuestion()]);
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
-    const userId = session?.user.id ?? null;
     const [checking, setChecking] = useState(Boolean(quizId));
+    const location = useLocation();
+    
+    // Guests (anonymous players) have a session but may not author quizzes.
+    const userId = session && !session.user.is_anonymous ? session.user.id : null;
 
     useEffect(() => {
         getCategories()
             .then(list => {
                 setCategories(list);
                 // Default to the only category when there is exactly one.
-                if (list.length === 1) {
-                    setDraft(d => (d.categoryId === null ? { ...d, categoryId: list[0].categoryId } : d));
-                }
+                if (list.length === 1) setCategoryId(current => current ?? list[0].categoryId);
             })
             .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load categories.'));
     }, []);
@@ -47,14 +75,20 @@ function QuizEditor() {
                     navigate('/quizzes', { replace: true });
                     return;
                 }
-                setDraft({
-                    quizTitle: q.quizTitle,
-                    categoryId: q.categoryId,
-                    questions: q.Question.map((qq: any) => ({
+                setTitle(q.quizTitle);
+                setCategoryId(q.categoryId);
+                setQuestions(q.Question.map(qq => {
+                    const answers: AnswerDraft[] = qq.Answer.map(a => ({ answerId: a.answerId, answerText: a.answerText, isCorrect: a.isCorrect }));
+                    // Pad to the full set of slots so an answer can be added back later.
+                    while (answers.length < MAX_ANSWERS) answers.push({ answerId: undefined, answerText: '', isCorrect: false });
+                    return {
+                        key: crypto.randomUUID(),
+                        questionId: qq.questionId,
                         questionText: qq.questionText,
-                        answers: qq.Answer.map((a: any) => ({ answerText: a.answerText, isCorrect: a.isCorrect })),
-                    })),
-                });
+                        answers,
+                        hints: qq.Hint.map(h => ({ hintId: h.hintId, hintText: h.hintText, hintCost: h.hintCost })),
+                    };
+                }));
                 setChecking(false);
             })
             .catch((e: unknown) => {
@@ -65,36 +99,56 @@ function QuizEditor() {
         return () => { cancelled = true; };
     }, [quizId, sessionLoading, userId, navigate]);
 
-    const updateQuestion = (qi: number, fn: (q: QuestionDraft) => QuestionDraft) =>
-        setDraft(d => ({ ...d, questions: d.questions.map((q, i) => (i === qi ? fn(q) : q)) }));
+    const updateQuestion = (key: string, fn: (q: EditorQuestion) => EditorQuestion) =>
+        setQuestions(list => list.map(q => (q.key === key ? fn(q) : q)));
 
-    const validate = () => {
-        if (!draft.quizTitle.trim()) return 'Quiz needs a title.';
-        if (draft.categoryId === null) return 'Pick a category.';
-        if (draft.questions.length === 0) return 'Add at least one question.';
-        for (const [i, q] of draft.questions.entries()) {
-            if (!q.questionText.trim()) return `Question ${i + 1} is empty.`;
-            if (!q.answers.some(a => a.isCorrect && a.answerText.trim())) return `Question ${i + 1} needs a correct answer.`;
+    const updateHint = (key: string, index: number, patch: Partial<HintDraft>) =>
+        updateQuestion(key, q => ({ ...q, hints: q.hints.map((h, i) => (i === index ? { ...h, ...patch } : h)) }));
+
+    // The same rules save_quiz enforces, so most mistakes are caught before saving.
+    const validate = (): string | null => {
+        if (!title.trim()) return 'Quiz needs a title.';
+        if (categoryId === null) return 'Pick a category.';
+        if (questions.length === 0) return 'Add at least one question.';
+        for (const [i, q] of questions.entries()) {
+            const label = `Question ${i + 1}`;
+            if (!q.questionText.trim()) return `${label} is empty.`;
+            const filled = q.answers.filter(a => a.answerText.trim());
+            if (filled.length < MIN_ANSWERS) return `${label} needs at least ${MIN_ANSWERS} answers.`;
+            if (filled.filter(a => a.isCorrect).length !== 1) return `${label} needs exactly one correct answer.`;
+            const texts = filled.map(a => a.answerText.trim().toLowerCase());
+            if (new Set(texts).size !== texts.length) return `${label} has two identical answers.`;
+            for (const [h, hint] of q.hints.entries()) {
+                if (!hint.hintText.trim()) return `Hint ${h + 1} of ${label} is empty.`;
+                if (!Number.isInteger(hint.hintCost) || hint.hintCost < 1 || hint.hintCost > MAX_HINT_COST) {
+                    return `Hint ${h + 1} of ${label} must cost between 1 and ${MAX_HINT_COST} points.`;
+                }
+            }
         }
         return null;
-    }
+    };
 
     const handleSave = async () => {
         const message = validate();
         if (message) return setError(message);
 
-        const cleanup: QuizDraft = {
-            ...draft,
-            quizTitle: draft.quizTitle.trim(),
-            questions: draft.questions.map(q => ({
-                ...q, answers: q.answers.filter(a => a.answerText.trim()),
+        const draft: QuizDraft = {
+            quizTitle: title.trim(),
+            categoryId,
+            questions: questions.map(({ key: _key, ...q }) => ({
+                ...q,
+                questionText: q.questionText.trim(),
+                // A cleared answer slot is dropped, which removes that answer.
+                answers: q.answers
+                    .filter(a => a.answerText.trim())
+                    .map(a => ({ ...a, answerText: a.answerText.trim() })),
+                hints: q.hints.map(h => ({ ...h, hintText: h.hintText.trim() })),
             })),
         };
         setSaving(true);
         setError(null);
         try {
-            if (quizId) await updateQuiz(Number(quizId), cleanup);
-            else await createQuiz(cleanup);
+            await saveQuiz(quizId ? Number(quizId) : null, draft);
             navigate('/quizzes');
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Could not save the quiz.');
@@ -120,120 +174,185 @@ function QuizEditor() {
         } finally {
             setSaving(false);
         }
-    }
+    };
 
-    if (!sessionLoading && !session) {
+    const removeQuestion = (q: EditorQuestion, index: number) => {
+        const hasContent = q.questionText.trim() || q.answers.some(a => a.answerText.trim());
+        if (hasContent && !window.confirm(`Remove question ${index + 1}?`)) return;
+        setQuestions(list => list.filter(x => x.key !== q.key));
+    };
+
+    if (sessionLoading) {
+        return <EditorShell><p className="quiz-muted center-text">Loading…</p></EditorShell>;
+    }
+    if (!userId) {
         return (
-            <div className="quiz-page">
+            <EditorShell>
                 <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
-                <p className="quiz-muted">You need to be signed in to create or edit quizzes.</p>
-                <Link className="quiz-button" to="/login">Go to sign in</Link>
-            </div>
+                <p className="quiz-muted">You need to be signed in with an account to create or edit quizzes.</p>
+                <Link className="quiz-button" to="/login" state={{ from: location.pathname + location.search + location.hash }}>Go to sign in</Link>
+            </EditorShell>
         );
     }
     if (quizId && checking) {
-        return (
-            <div>
-                <Navbar />
-                <div className="quiz-page">
-                    <p className="quiz-muted center-text">Loading quiz…</p>
-                </div>
-            </div>
-        );
+        return <EditorShell><p className="quiz-muted center-text">Loading quiz…</p></EditorShell>;
     }
+
     return (
-        <div>
-            <Navbar/>
-            <div className="quiz-page">
-                
-                <header className="quiz-page-header">
-                    <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
-                </header>
+        <EditorShell>
+            <header className="quiz-page-header">
+                <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
+            </header>
 
-                <div className="quiz-form">
-                    <label className="quiz-field">
-                        Quiz title
+            <div className="quiz-form">
+                <label className="quiz-field">
+                    Quiz title
+                    <input
+                        placeholder="Quiz title"
+                        maxLength={MAX_TITLE_LENGTH}
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                    />
+                </label>
+
+                <label className="quiz-field">
+                    Category
+                    <select
+                        value={categoryId ?? ''}
+                        onChange={e => setCategoryId(e.target.value ? Number(e.target.value) : null)}
+                    >
+                        <option value="">Pick a category</option>
+                        {categories.map(c => (
+                            <option key={c.categoryId} value={c.categoryId}>{c.categoryName}</option>
+                        ))}
+                    </select>
+                </label>
+
+                <p className="quiz-muted">
+                    Players never see the question until the round ends. They bet on one of the answers
+                    and can pay for hints, so write hints that narrow things down without giving it away.
+                </p>
+
+                {questions.map((q, qi) => (
+                    <fieldset key={q.key} className="quiz-question">
+                        <legend>Question {qi + 1}</legend>
                         <input
-                            placeholder="Quiz title"
-                            value={draft.quizTitle}
-                            onChange={e => setDraft(d => ({ ...d, quizTitle: e.target.value }))}
+                            placeholder="The question (hidden until the reveal)"
+                            aria-label={`Question ${qi + 1} text`}
+                            maxLength={MAX_TEXT_LENGTH}
+                            value={q.questionText}
+                            onChange={e => updateQuestion(q.key, x => ({ ...x, questionText: e.target.value }))}
                         />
-                    </label>
 
-                    <label className="quiz-field">
-                        Category
-                        <select
-                            value={draft.categoryId ?? ''}
-                            onChange={e => setDraft(d => ({ ...d, categoryId: e.target.value ? Number(e.target.value) : null }))}
-                        >
-                            <option value="">Pick a category</option>
-                            {categories.map(c => (
-                                <option key={c.categoryId} value={c.categoryId}>{c.categoryName}</option>
-                            ))}
-                        </select>
-                    </label>
+                        <p className="quiz-editor-heading">
+                            Answers ({MIN_ANSWERS} to {MAX_ANSWERS}). Select the correct one.
+                        </p>
+                        {q.answers.map((a, ai) => (
+                            <label key={ai} className="quiz-answer">
+                                <input
+                                    type="radio"
+                                    name={`correct-${q.key}`}
+                                    title="Mark as the correct answer"
+                                    aria-label={`Answer ${ai + 1} is correct`}
+                                    checked={a.isCorrect}
+                                    disabled={!a.answerText.trim()}
+                                    onChange={() =>
+                                        updateQuestion(q.key, x => ({
+                                            ...x, answers: x.answers.map((y, j) => ({ ...y, isCorrect: j === ai })),
+                                        }))
+                                    }
+                                />
+                                <input
+                                    placeholder={`Answer ${ai + 1}${ai >= MIN_ANSWERS ? ' (optional)' : ''}`}
+                                    maxLength={MAX_TEXT_LENGTH}
+                                    value={a.answerText}
+                                    onChange={e =>
+                                        updateQuestion(q.key, x => ({
+                                            ...x,
+                                            answers: x.answers.map((y, j) => {
+                                                if (j !== ai) return y;
+                                                const answerText = e.target.value;
+                                                // An empty slot cannot be the correct answer.
+                                                return { ...y, answerText, isCorrect: answerText.trim() ? y.isCorrect : false };
+                                            }),
+                                        }))
+                                    }
+                                />
+                            </label>
+                        ))}
 
-                    {draft.questions.map((q, qi) => (
-                        <fieldset key={qi} className="quiz-question">
-                            <legend>Question {qi + 1}</legend>
-                            <input
-                                placeholder={`Question ${qi + 1}`}
-                                value={q.questionText}
-                                onChange={e => updateQuestion(qi, x => ({ ...x, questionText: e.target.value }))}
-                            />
-                            {q.answers.map((a, ai) => (
-                                <label key={ai} className="quiz-answer">
-                                    <input
-                                        type="radio"
-                                        name={`correct-${qi}`}
-                                        title="Mark as the correct answer"
-                                        checked={a.isCorrect}
-                                        onChange={() =>
-                                            updateQuestion(qi, x => ({
-                                                ...x, answers: x.answers.map((y, j) => ({ ...y, isCorrect: j === ai })),
-                                            }))
-                                        }
-                                    />
-                                    <input
-                                        placeholder={`Answer ${ai + 1}`}
-                                        value={a.answerText}
-                                        onChange={e =>
-                                            updateQuestion(qi, x => ({
-                                                ...x, answers: x.answers.map((y, j) => (j === ai ? { ...y, answerText: e.target.value } : y)),
-                                            }))
-                                        }
-                                    />
-                                </label>
-                            ))}
+                        <p className="quiz-editor-heading">Hints (optional, up to {MAX_HINTS}). Players pay points to see them.</p>
+                        {q.hints.map((hint, hi) => (
+                            <div key={hint.hintId ?? `new-${hi}`} className="quiz-hint">
+                                <input
+                                    placeholder={`Hint ${hi + 1}`}
+                                    aria-label={`Hint ${hi + 1} text`}
+                                    maxLength={MAX_TEXT_LENGTH}
+                                    value={hint.hintText}
+                                    onChange={e => updateHint(q.key, hi, { hintText: e.target.value })}
+                                />
+                                <input
+                                    type="number"
+                                    min={1}
+                                    max={MAX_HINT_COST}
+                                    step={1}
+                                    inputMode="numeric"
+                                    aria-label={`Hint ${hi + 1} price in points`}
+                                    title="Price in points"
+                                    value={hint.hintCost}
+                                    onChange={e => updateHint(q.key, hi, { hintCost: Math.floor(Number(e.target.value) || 0) })}
+                                />
+                                <button
+                                    type="button"
+                                    className="quiz-link"
+                                    onClick={() => updateQuestion(q.key, x => ({ ...x, hints: x.hints.filter((_, i) => i !== hi) }))}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
+                        {q.hints.length < MAX_HINTS && (
                             <button
                                 type="button"
                                 className="quiz-link"
-                                onClick={() => setDraft(d => ({ ...d, questions: d.questions.filter((_, i) => i !== qi) }))}
+                                onClick={() =>
+                                    updateQuestion(q.key, x => ({
+                                        ...x, hints: [...x.hints, { hintText: '', hintCost: DEFAULT_HINT_COST }],
+                                    }))
+                                }
                             >
-                                Remove question
-                            </button>
-                        </fieldset>
-                    ))}
-
-                    <div className="quiz-actions">
-                        <button type="button" onClick={() => setDraft(d => ({ ...d, questions: [...d.questions, emptyQuestion()] }))}>
-                            Add question
-                        </button>
-                        <button type="button" className="quiz-button" onClick={handleSave} disabled={saving}>
-                            {saving ? 'Saving...' : 'Save quiz'}
-                        </button>
-                        {quizId && (
-                            <button type="button" className="quiz-danger" onClick={handleDelete} disabled={saving}>
-                                {confirmDelete ? 'Click again to confirm delete' : 'Delete quiz'}
+                                Add a hint
                             </button>
                         )}
-                    </div>
 
-                    {error && <p className="quiz-error" role="alert">{error}</p>}
+                        <button type="button" className="quiz-link" onClick={() => removeQuestion(q, qi)}>
+                            Remove question
+                        </button>
+                    </fieldset>
+                ))}
+
+                <div className="quiz-actions">
+                    <button
+                        type="button"
+                        onClick={() => setQuestions(list => [...list, emptyQuestion()])}
+                        disabled={questions.length >= MAX_QUESTIONS}
+                    >
+                        Add question
+                    </button>
+                    <button type="button" className="quiz-button" onClick={handleSave} disabled={saving}>
+                        {saving ? 'Saving...' : 'Save quiz'}
+                    </button>
+                    {quizId && (
+                        <button type="button" className="quiz-danger" onClick={handleDelete} disabled={saving}>
+                            {confirmDelete ? 'Click again to confirm delete' : 'Delete quiz'}
+                        </button>
+                    )}
                 </div>
+
+                {error && <p className="quiz-error" role="alert">{error}</p>}
             </div>
-        </div>
+        </EditorShell>
     );
 }
 
-export default QuizEditor
+export default QuizEditor;
