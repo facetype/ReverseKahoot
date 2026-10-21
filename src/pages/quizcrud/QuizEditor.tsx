@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { deleteQuiz, getCategories, getQuiz, saveQuiz } from '@/api/supabase/quiz-api';
 import type { AnswerDraft, Category, HintDraft, QuestionDraft, QuizDraft } from '@/common/types';
 import {
@@ -50,7 +50,8 @@ function QuizEditor() {
     const [saving, setSaving] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [checking, setChecking] = useState(Boolean(quizId));
-
+    const location = useLocation();
+    
     // Guests (anonymous players) have a session but may not author quizzes.
     const userId = session && !session.user.is_anonymous ? session.user.id : null;
 
@@ -189,7 +190,7 @@ function QuizEditor() {
             <EditorShell>
                 <h1>{quizId ? 'Edit quiz' : 'New quiz'}</h1>
                 <p className="quiz-muted">You need to be signed in with an account to create or edit quizzes.</p>
-                <Link className="quiz-button" to="/login">Go to sign in</Link>
+                <Link className="quiz-button" to="/login" state={{ from: location.pathname + location.search + location.hash }}>Go to sign in</Link>
             </EditorShell>
         );
     }

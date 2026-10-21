@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getCategories, listQuizzes } from '@/api/supabase/quiz-api';
 import { createQuizInstance } from '@/api/supabase/quiz-instance-api';
 import type { Category, QuizSummary } from '@/common/types';
@@ -27,7 +27,8 @@ function QuizList() {
             
             .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load quizzes.'));
     }, []);
-
+    const location = useLocation();
+    
     const categoryName = (id: number) =>
         categories.find(c => c.categoryId === id)?.categoryName ?? 'Uncategorised';
 
@@ -83,7 +84,7 @@ function QuizList() {
                 />
                 {userId
                     ? <Link className="quiz-button" to="/quizzes/new">New quiz</Link>
-                    : <a className="quiz-button" href="/login/">Sign in</a>}
+                    : <Link className="quiz-button" to="/login/" state={{ from: location.pathname + location.search + location.hash }}>Sign in</Link>}
             </header>
 
             {error && <p className="quiz-error center-text">{error}</p>}
