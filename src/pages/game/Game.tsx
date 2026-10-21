@@ -361,10 +361,7 @@ function Game() {
                             </button>
                         </div>
                     )}
-                </div>
-
-                <div className="pageFooterMiddleButtonsContainer">
-                    {isPlayer() && (
+                    {isPlayer() && inGame && (
                         <div className="currentPointsContainer">
                             <img src="/elements/game/points-icon.svg" width="30px"/>
                             <p>{playerPoints} pts</p>
@@ -383,7 +380,9 @@ function Game() {
                     )}
 
                     <div className="pageButton">
+                        {isHost() && (
                             <button onClick={changeState}><p>{gameButtonText()}</p><img src="/elements/game/game-arrow-button.svg" width="50px"/></button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -499,16 +498,6 @@ function Game() {
         }
     }
     
-    const AddPlayer = () => {
-        setPlayers(players + 1);
-    }
-    
-    const AddPlayerAnswer = () => {
-        if (playersAnswered < players) {
-            setPlayersAnswered(playersAnswered + 1)
-        }
-    }
-    
     const deductPlayerPoints = (shopItemId: string = "", cost: number, isHint:boolean = false): boolean => {
         if (Math.floor(cost) > playerPoints) return false;
         if (purchasedThisQuestion.includes(shopItemId)) return false;
@@ -560,7 +549,6 @@ function Game() {
         setPlayerPoints(playerPoints - shownPlayerBet);
         setPlacedBet({option: selectedOption, amount: shownPlayerBet}); 
     }
-
     //#endregion
 
     return (
