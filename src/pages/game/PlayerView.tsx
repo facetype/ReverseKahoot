@@ -58,7 +58,7 @@ function PlayerView({ instanceId, game, me, remaining }: PlayerViewProps) {
             {game.phase === 'lobby' && (
                 <>
                     <h2 id="game-heading">Get ready</h2>
-                    <p className="quiz-muted">The host is about to show the first answer.</p>
+                    <p className="quiz-muted">The round is starting.</p>
                 </>
             )}
 
@@ -75,14 +75,17 @@ function PlayerView({ instanceId, game, me, remaining }: PlayerViewProps) {
 
             {game.phase === 'reveal' && game.currentQuestion && (
                 <>
-                    <h2 id="game-heading" className="game-clue">{game.currentQuestion.text}</h2>
-                    <p className="game-outcome" role="status">
-                        {!state?.bet
-                            ? 'You did not bet on this one.'
-                            : state.bet.answerId === game.lastReveal?.correctAnswerId
-                                ? `Correct! +${state.bet.wager}`
-                                : `Wrong. -${state.bet.wager}`}
-                    </p>
+                    <p className="quiz-muted">The question was</p>
+                    <h2 id="game-heading" className="game-clue">{game.lastReveal?.questionText ?? 'Round over'}</h2>
+                    {state && (
+                        <p className="game-outcome" role="status">
+                            {!state.bet
+                                ? 'You did not bet on this one.'
+                                : state.bet.answerId === game.lastReveal?.correctAnswerId
+                                    ? `Correct! +${state.bet.wager}`
+                                    : `Wrong. -${state.bet.wager}`}
+                        </p>
+                    )}
                     <OptionGrid
                         options={game.currentQuestion.options}
                         selectedId={state?.bet?.answerId ?? null}
@@ -145,7 +148,7 @@ function PlayerQuestion({ instanceId, question, state, remaining, onState }: Pla
     const handleBet = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (selected === null) {
-            setError('Pick the question you think fits.');
+            setError('Pick an answer first.');
             return;
         }
         void run(() => placeBet(instanceId, selected, shownWager), 'Could not place your bet.');
@@ -160,7 +163,8 @@ function PlayerQuestion({ instanceId, question, state, remaining, onState }: Pla
                 <span>Answer {question.index + 1} of {question.total}</span>
                 <span className="game-timer" aria-label={`${remaining ?? 0} seconds left`}>{remaining ?? 0}</span>
             </div>
-            <p className="quiz-muted">Which question fits this answer?</p>
+            <p className="quiz-muted"> Question is hidden </p>
+            <p className="quiz-muted">Place your bets</p>
             <h2 id="game-heading" className="game-clue">{question.text}</h2>
 
             {state.hints.length > 0 && (

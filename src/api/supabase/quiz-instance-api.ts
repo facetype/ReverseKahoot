@@ -26,6 +26,7 @@ export interface GameQuestion {
 
 export interface GameReveal {
     questionId?: number;
+    questionText?: string;
     correctAnswerId?: number;
     // Keyed by answerId.
     betCounts?: Record<string, number>;

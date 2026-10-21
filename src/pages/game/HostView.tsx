@@ -28,7 +28,7 @@ function HostView({ game, players, betCount, remaining, advancing, onAdvance }: 
                 <Standings standings={players} />
                 <p className="center-text">
                     <button className="quiz-button" type="button" onClick={() => onAdvance('lobby')} disabled={advancing}>
-                        Show the first answer
+                        Start the first round
                     </button>
                 </p>
             </section>
@@ -40,7 +40,7 @@ function HostView({ game, players, betCount, remaining, advancing, onAdvance }: 
             <section className="game-stage" aria-labelledby="game-heading">
                 <h2 id="game-heading">Final results</h2>
                 <Standings standings={game.lastReveal?.standings ?? []} />
-                <p className="center-text"><Link className="quiz-link" to="/quizzes">Back to quizzes</Link></p>
+                <p className="center-text"><Link className="quiz-link" to="/quizzes">End Game</Link></p>
             </section>
         );
     }
@@ -57,8 +57,19 @@ function HostView({ game, players, betCount, remaining, advancing, onAdvance }: 
                     <span className="game-timer" aria-label={`${remaining ?? 0} seconds left`}>{remaining ?? 0}</span>
                 )}
             </div>
-            <p className="quiz-muted">Which question fits this answer?</p>
-            <h2 id="game-heading" className="game-clue">{question.text}</h2>
+            {reveal
+                ? (
+                    <>
+                        <p className="quiz-muted">The question was</p>
+                        <h2 id="game-heading" className="game-clue">{reveal.questionText ?? 'Round over'}</h2>
+                    </>
+                )
+                : (
+                    <>
+                        <p className="quiz-muted">The question is hidden until the round ends.</p>
+                        <h2 id="game-heading" className="game-clue">Place your bets</h2>
+                    </>
+            )}
 
             <OptionGrid
                 options={question.options}

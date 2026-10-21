@@ -38,6 +38,23 @@ export default {
         return Response.json({ error: "Sign in before hosting a game." }, { status: 401 });
       }
 
+            
+       // Freeze the quiz as it is now. The game plays from this copy, so the author
+      // can keep editing the quiz while the game runs.
+      const { data: snapshot, error: snapshotError } = await ctx.supabaseAdmin
+        .rpc("snapshot_quiz", { p_quiz_id: quizId });
+
+      if (snapshotError) {
+        return Response.json({ error: snapshotError.message }, { status: 500 });
+      }
+      if (!snapshot) {
+        return Response.json({ error: "This quiz could not be found." }, { status: 404 });
+      }
+      if (!Array.isArray(snapshot.questions) || snapshot.questions.length === 0) {
+        return Response.json({ error: "This quiz has no questions to play." }, { status: 400 });
+      }
+
+
       // The permanent record that players and bets hang off. The live instance
       // below expires after 24 hours; this row is kept.
       const { data: game, error: gameError } = await ctx.supabaseAdmin

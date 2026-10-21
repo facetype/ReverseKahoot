@@ -17,7 +17,7 @@ function OptionGrid({ options, selectedId = null, onSelect, disabled = false, co
     const revealed = correctAnswerId !== undefined;
 
     return (
-        <ul className="game-options" aria-label="Which question fits?">
+        <ul className="game-options" aria-label="Which answer fits?">
             {options.map((option, index) => {
                 const letter = OPTION_LETTERS[index] ?? String(index + 1);
                 const classes = [
