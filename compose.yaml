@@ -1,0 +1,13 @@
+# The app in a container, for the local test environment (see README).
+# Start the Supabase stack first with `npx supabase start`.
+services:
+  app:
+    build: .
+    ports:
+      # Not 5173, so it cannot be mixed up with a plain `npm run dev` on the host.
+      - "8080:5173"
+    volumes:
+      # Mount the project so edits hot-reload without rebuilding the image.
+      - .:/app
+      # Keep the container's Linux node_modules instead of the host's macOS one.
+      - /app/node_modules

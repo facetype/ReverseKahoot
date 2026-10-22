@@ -36,6 +36,37 @@ npm run dev
 | `npm run build`   | Type-check (`tsc -b`) and build for production |
 | `npm run preview` | Serve the production build locally        |
 | `npm run lint`    | Lint with oxlint                          |
+| `npm run dev:docker` | Start the dev server against the local Supabase stack |
+
+### Local test environment (Docker)
+
+The whole backend (Postgres, Auth, Realtime, Edge Functions and the Studio
+dashboard) can run on your machine in Docker, so you can test without touching
+the live project. You need Docker Desktop running, and the `docker` command on
+your PATH (on macOS: `export PATH="$HOME/.docker/bin:$PATH"` in `~/.zshrc`).
+
+```bash
+npx supabase start      # first run downloads the images, a few minutes
+docker compose up       # the app in a container, pointed at the local stack
+```
+
+Instead of `docker compose up` you can run `npm run dev:docker` to start the
+app straight on your machine (at http://localhost:5173). Both point the app
+at the local stack through `.env.docker`. A plain `npm run dev` still uses
+`.env`, which is the live project.
+
+| What              | Where                                   |
+| ----------------- | --------------------------------------- |
+| App (container)   | http://localhost:8080                   |
+| Studio (database) | http://127.0.0.1:54323                  |
+| Test host login   | `host@test.local` / `password123`       |
+
+Log in as the test host and host the "Test quiz". To join as a player, open a
+private window, so it gets its own session, and enter the join code.
+
+The database is built from `supabase/migrations/` and filled with test data from
+`supabase/seed.sql`. `npx supabase db reset` wipes it and rebuilds it from those
+files. `npx supabase stop` shuts the stack down and keeps your data.
 
 ## Project structure
 

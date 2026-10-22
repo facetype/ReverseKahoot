@@ -1,6 +1,8 @@
 .env
 *.env.*
 !.env.example
+!.env.docker
+supabase/.temp
 # Logs
 logs
 *.log
