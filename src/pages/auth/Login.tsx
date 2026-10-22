@@ -73,6 +73,8 @@ function Login() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<Message>(null)
 
+  const signedIn = session !== null && !session.user.is_anonymous
+
   useEffect(() => {
     if (!supabase) return
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
@@ -90,7 +92,7 @@ function Login() {
   // Whenever a session appears, make sure the user's Profile row exists and
   // load it so the username can be shown.
   useEffect(() => {
-    if (!session) return
+    if (!session || session.user.is_anonymous) return
     let cancelled = false
     ensureProfile(session.user)
       .then((p) => {
@@ -187,7 +189,7 @@ function Login() {
     )
   }
 
-  if (session && mode !== 'update-password') {
+  if (signedIn && mode !== 'update-password') {
     return (
       <div> <Navbar/>
       <div className="auth">

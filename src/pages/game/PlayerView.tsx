@@ -1,14 +1,21 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import {
     buyHint,
     getPlayerState,
     placeBet,
     type GameQuestion,
     type GameState,
+    type PlayerStanding,
     type PlayerState,
 } from '@/api/supabase/quiz-instance-api';
 import BetSlider from './BetSlider';
+import GameFooter from './GameFooter';
 import OptionGrid from './OptionGrid';
+import ResultsPodium from './Resultspodium';
+import ScoreboardPanel from './ScoreBoardPanel';
+import ShopPanel from './ShopPanel';
+import SpiralBackground from './SpiralBackground';
 import Standings from './Standings';
 
 interface PlayerViewProps {
@@ -16,6 +23,11 @@ interface PlayerViewProps {
     game: GameState;
     me: string | null;
     remaining: number | null;
+    // Everyone in the game (starting points), and how many have bet this round.
+    players: PlayerStanding[];
+    betCount: number;
+    // Quiz title and error line, rendered at the top of the stage.
+    header?: ReactNode;
 }
 
 function errorText(e: unknown, fallback: string): string {
@@ -23,9 +35,16 @@ function errorText(e: unknown, fallback: string): string {
 }
 
 // A player's phone: buy hints, pick an option, bet, then see how it went.
-function PlayerView({ instanceId, game, me, remaining }: PlayerViewProps) {
+function PlayerView({ instanceId, game, me, remaining, players, betCount, header }: PlayerViewProps) {
     const [state, setState] = useState<PlayerState | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [busy, setBusy] = useState(false);
+    // The shop belongs to one round. Remembering which round it was opened for closes
+    // it automatically when the round changes, without an effect to reset it.
+    const roundKey = `${game.phase}:${game.currentQuestion?.questionId ?? ''}`;
+    const [shopOpenFor, setShopOpenFor] = useState<string | null>(null);
+    const shopOpen = shopOpenFor === roundKey;
+    const [scoreboardOpen, setScoreboardOpen] = useState(false);
     const questionId = game.currentQuestion?.questionId ?? null;
 
     // Points, bet and hints change with every step of the game, so re-read them.
@@ -47,66 +66,121 @@ function PlayerView({ instanceId, game, me, remaining }: PlayerViewProps) {
     const myStanding = standings.find(s => s.userId === me) ?? null;
     const myRank = myStanding ? standings.indexOf(myStanding) + 1 : null;
 
+    const question = game.currentQuestion;
+    const timeUp = remaining === 0;
+    const bought = new Set(state?.hints.map(h => h.hintId) ?? []);
+    const shopAvailable =
+        game.phase === 'question' && !!question && question.hints.length > 0 && !!state && !state.bet && !timeUp;
+
+    const handleBuy = async (hintId: number) => {
+        setBusy(true);
+        setError(null);
+        try {
+            setState(await buyHint(instanceId, hintId));
+        } catch (e: unknown) {
+            setError(errorText(e, 'Could not buy the hint.'));
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const finished = game.phase === 'finished';
+    const scoreboardStandings = standings.length > 0 ? standings : players;
+    const counterText = game.phase === 'question' ? `${betCount}/${players.length}` : String(players.length);
+
     return (
-        <section className="game-stage" aria-labelledby="game-heading">
-            <div className="game-status">
-                <span>{state?.nickname ?? 'You'}</span>
-                <span className="game-my-points">{state?.points ?? '…'} pts</span>
-            </div>
-            {error && <p className="quiz-error" role="alert">{error}</p>}
-
-            {game.phase === 'lobby' && (
-                <>
-                    <h2 id="game-heading">Get ready</h2>
-                    <p className="quiz-muted">The round is starting.</p>
-                </>
-            )}
-
-            {game.phase === 'question' && game.currentQuestion && state && (
-                <PlayerQuestion
-                    key={game.currentQuestion.questionId}
-                    instanceId={instanceId}
-                    question={game.currentQuestion}
-                    state={state}
-                    remaining={remaining}
-                    onState={setState}
-                />
-            )}
-
-            {game.phase === 'reveal' && game.currentQuestion && (
-                <>
-                    <p className="quiz-muted">The question was</p>
-                    <h2 id="game-heading" className="game-clue">{game.lastReveal?.questionText ?? 'Round over'}</h2>
-                    {state && (
-                        <p className="game-outcome" role="status">
-                            {!state.bet
-                                ? 'You did not bet on this one.'
-                                : state.bet.answerId === game.lastReveal?.correctAnswerId
-                                    ? `Correct! +${state.bet.wager}`
-                                    : `Wrong. -${state.bet.wager}`}
-                        </p>
-                    )}
-                    <OptionGrid
-                        options={game.currentQuestion.options}
-                        selectedId={state?.bet?.answerId ?? null}
-                        correctAnswerId={game.lastReveal?.correctAnswerId}
+        <>
+            <div className="gameStateContainer">
+                {shopOpen && shopAvailable && question && state && (
+                    <ShopPanel
+                        hints={question.hints}
+                        boughtIds={bought}
+                        points={state.points}
+                        busy={busy}
+                        onBuy={hintId => void handleBuy(hintId)}
+                        onClose={() => setShopOpenFor(null)}
                     />
-                    {myRank && <p className="quiz-muted center-text">You are #{myRank} of {standings.length}.</p>}
-                </>
-            )}
+                )}
 
-            {game.phase === 'finished' && (
-                <>
-                    <h2 id="game-heading">Game over</h2>
-                    {myRank && myStanding && (
-                        <p className="game-outcome" role="status">
-                            You finished #{myRank} of {standings.length} with {myStanding.points} points.
-                        </p>
-                    )}
-                    <Standings standings={standings} me={me} />
-                </>
-            )}
-        </section>
+                <div className="quiz-page game-page">
+                    {header}
+                    <section className="game-stage" aria-labelledby="game-heading">
+                        {error && <p className="quiz-error" role="alert">{error}</p>}
+
+                        {game.phase === 'lobby' && (
+                            <>
+                                <h2 id="game-heading">Get ready</h2>
+                                <p className="quiz-muted">The first round is about to start.</p>
+                            </>
+                        )}
+
+                        {game.phase === 'question' && question && state && (
+                            <PlayerQuestion
+                                key={question.questionId}
+                                instanceId={instanceId}
+                                question={question}
+                                state={state}
+                                remaining={remaining}
+                                onState={setState}
+                            />
+                        )}
+
+                        {game.phase === 'reveal' && question && (
+                            <>
+                                <SpiralBackground />
+                                <p className="quiz-muted">The question was</p>
+                                <h2 id="game-heading" className="game-clue">{game.lastReveal?.questionText ?? 'Round over'}</h2>
+                                {state && (
+                                    <p className="game-outcome" role="status">
+                                        {!state.bet
+                                            ? 'You did not bet on this one.'
+                                            : state.bet.answerId === game.lastReveal?.correctAnswerId
+                                                ? `Correct! +${state.bet.wager}`
+                                                : `Wrong. -${state.bet.wager}`}
+                                    </p>
+                                )}
+                                <OptionGrid
+                                    options={question.options}
+                                    selectedId={state?.bet?.answerId ?? null}
+                                    correctAnswerId={game.lastReveal?.correctAnswerId}
+                                />
+                                {myRank && <p className="quiz-muted center-text">You are #{myRank} of {standings.length}.</p>}
+                            </>
+                        )}
+
+                        {finished && (
+                            <div className="gameResultsContainer">
+                                <SpiralBackground />
+                                <div className="gameResultsTextContainer">
+                                    <h2 id="game-heading">Game over</h2>
+                                    {myRank && myStanding && (
+                                        <p className="game-outcome" role="status">
+                                            You finished #{myRank} of {standings.length} with {myStanding.points} points.
+                                        </p>
+                                    )}
+                                </div>
+                                <ResultsPodium standings={standings} me={me} />
+                                {standings.length > 3 && <Standings standings={standings} me={me} offset={3} />}
+                                <p className="center-text"><Link className="quiz-link" to="/">Back home</Link></p>
+                            </div>
+                        )}
+                    </section>
+                </div>
+
+                {scoreboardOpen && !finished && (
+                    <ScoreboardPanel standings={scoreboardStandings} me={me} onClose={() => setScoreboardOpen(false)} />
+                )}
+            </div>
+
+            <GameFooter
+                points={state?.points ?? null}
+                onToggleShop={shopAvailable ? () => setShopOpenFor(current => (current === roundKey ? null : roundKey)) : undefined}
+                shopOpen={shopOpen}
+                counterText={finished ? undefined : counterText}
+                onToggleScoreboard={game.phase === 'lobby' || finished ? undefined : () => setScoreboardOpen(open => !open)}
+                scoreboardOpen={scoreboardOpen}
+            />
+        </>
     );
 }
 
@@ -127,31 +201,25 @@ function PlayerQuestion({ instanceId, question, state, remaining, onState }: Pla
 
     const timeUp = remaining === 0;
     const bet = state.bet;
-    const boughtIds = new Set(state.hints.map(h => h.hintId));
-    const forSale = question.hints.filter(h => !boughtIds.has(h.hintId));
     // Points can drop after a hint purchase; never offer more than is left.
     const maxWager = state.points;
     const shownWager = Math.min(wager, maxWager);
 
-    const run = async (action: () => Promise<PlayerState>, fallback: string) => {
-        setBusy(true);
-        setError(null);
-        try {
-            onState(await action());
-        } catch (e: unknown) {
-            setError(errorText(e, fallback));
-        } finally {
-            setBusy(false);
-        }
-    };
-
-    const handleBet = (e: FormEvent<HTMLFormElement>) => {
+    const handleBet = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (selected === null) {
             setError('Pick an answer first.');
             return;
         }
-        void run(() => placeBet(instanceId, selected, shownWager), 'Could not place your bet.');
+        setBusy(true);
+        setError(null);
+        try {
+            onState(await placeBet(instanceId, selected, shownWager));
+        } catch (err: unknown) {
+            setError(errorText(err, 'Could not place your bet.'));
+        } finally {
+            setBusy(false);
+        }
     };
 
     const optionText = (answerId: number) =>
@@ -160,12 +228,14 @@ function PlayerQuestion({ instanceId, question, state, remaining, onState }: Pla
     return (
         <>
             <div className="game-status">
-                <span>Answer {question.index + 1} of {question.total}</span>
+                <span>Question {question.index + 1} of {question.total}</span>
                 <span className="game-timer" aria-label={`${remaining ?? 0} seconds left`}>{remaining ?? 0}</span>
             </div>
-            <p className="quiz-muted"> Question is hidden </p>
-            <p className="quiz-muted">Place your bets</p>
-            <h2 id="game-heading" className="game-clue">{question.text}</h2>
+            <p className="quiz-muted">
+                The question is hidden until the round ends.
+                {question.hints.length > 0 && ' Open the shop to buy a hint, then bet on an answer.'}
+            </p>
+            <h2 id="game-heading" className="game-clue">Place your bets</h2>
 
             {state.hints.length > 0 && (
                 <ul className="game-hints" aria-label="Your hints">
@@ -175,35 +245,28 @@ function PlayerQuestion({ instanceId, question, state, remaining, onState }: Pla
 
             {bet
                 ? (
-                    <p className="game-outcome" role="status">
-                        You bet {bet.wager} on “{optionText(bet.answerId)}”. Waiting for the reveal…
-                    </p>
+                    <>
+                        <OptionGrid
+                            options={question.options}
+                            selectedId={bet.answerId}
+                            disabled
+                            selectedBadge={`${bet.wager} pts`}
+                        />
+                        <p className="game-outcome" role="status">
+                            You bet {bet.wager} on “{optionText(bet.answerId)}”. Waiting for the reveal…
+                        </p>
+                    </>
                 )
                 : timeUp
                     ? <p className="game-outcome" role="status">Time is up. No bet this round.</p>
                     : (
-                        <form className="game-bet" onSubmit={handleBet}>
-                            {forSale.length > 0 && (
-                                <div className="game-hint-shop">
-                                    {forSale.map((hint, index) => (
-                                        <button
-                                            key={hint.hintId}
-                                            type="button"
-                                            className="quiz-button game-hint-button"
-                                            onClick={() => void run(() => buyHint(instanceId, hint.hintId), 'Could not buy the hint.')}
-                                            disabled={busy || hint.cost > state.points}
-                                        >
-                                            Buy hint {state.hints.length + index + 1} ({hint.cost} pts)
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-
+                        <form className="game-bet" onSubmit={e => void handleBet(e)}>
                             <OptionGrid
                                 options={question.options}
                                 selectedId={selected}
                                 onSelect={setSelected}
                                 disabled={busy}
+                                selectedBadge={selected !== null && shownWager > 0 ? `${shownWager} pts` : undefined}
                             />
 
                             <label className="quiz-field" htmlFor="game-wager">

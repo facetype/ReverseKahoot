@@ -22,10 +22,11 @@ function Lobby() {
     const location = useLocation();
     const navigate = useNavigate();
     const navState = (location.state as LobbyNavState | null) ?? null;
+    const [navTitle] = useState<string | null>(navState?.quizTitle ?? null);
     const { session } = useSession();
 
     const [instance, setInstance] = useState<QuizInstanceSession | null>(navState?.instance ?? null);
-    const [quizTitle] = useState<string | null>(navState?.quizTitle ?? null);
+    const quizTitle = instance?.quizTitle ?? navTitle;
     const [loading, setLoading] = useState(!navState?.instance);
     const [error, setError] = useState<string | null>(null);
     const [starting, setStarting] = useState(false);

@@ -9,13 +9,14 @@ import Navbar from '@/common/components/navbar/navbar';
 import { useMemo } from 'react';
 
 function QuizList() {
-    const { session } = useSession();
+    const { session, isGuest } = useSession();
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [hostingQuizId, setHostingQuizId] = useState<number | null>(null);
     const [searchItem, setSearchItem] = useState('');
     const navigate = useNavigate();
+    
 
     useEffect(() => {
         Promise.all([listQuizzes(), getCategories()])
@@ -32,7 +33,7 @@ function QuizList() {
     const categoryName = (id: number) =>
         categories.find(c => c.categoryId === id)?.categoryName ?? 'Uncategorised';
 
-    const userId = session?.user.id ?? null;
+    const userId = session && !isGuest ? session.user.id : null;
 
     const handleHost = async (quiz: QuizSummary) => {
         setHostingQuizId(quiz.quizId);

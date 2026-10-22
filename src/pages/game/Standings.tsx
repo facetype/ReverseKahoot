@@ -6,6 +6,8 @@ interface StandingsProps {
     // Show each player's result on the question just revealed.
     showResult?: boolean;
     limit?: number;
+    // Skip the first players (shown elsewhere, e.g. on the podium); ranks keep counting.
+    offset?: number;
 }
 
 function formatResult(pointsWon: number, wager: number): string {
@@ -13,8 +15,9 @@ function formatResult(pointsWon: number, wager: number): string {
     return pointsWon > 0 ? `+${pointsWon}` : `${pointsWon}`;
 }
 
-function Standings({ standings, me = null, showResult = false, limit }: StandingsProps) {
-    const shown = limit ? standings.slice(0, limit) : standings;
+function Standings({ standings, me = null, showResult = false, limit, offset = 0 }: StandingsProps) {
+    const rest = standings.slice(offset);
+    const shown = limit ? rest.slice(0, limit) : rest;
     if (shown.length === 0) return <p className="quiz-muted center-text">No players.</p>;
 
     return (
@@ -24,7 +27,7 @@ function Standings({ standings, me = null, showResult = false, limit }: Standing
                     key={player.userId}
                     className={`game-standing${player.userId === me ? ' game-standing-me' : ''}`}
                 >
-                    <span className="game-rank">{index + 1}</span>
+                    <span className="game-rank">{offset + index + 1}</span>
                     <span className="game-nickname">
                         {player.nickname}
                         {player.userId === me ? ' (you)' : ''}

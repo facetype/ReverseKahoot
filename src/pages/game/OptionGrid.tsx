@@ -11,13 +11,15 @@ interface OptionGridProps {
     // Set after the reveal.
     correctAnswerId?: number;
     betCounts?: Record<string, number>;
+    // Shown as a small badge on the selected option (the amount being or already bet).
+    selectedBadge?: string;
 }
 
-function OptionGrid({ options, selectedId = null, onSelect, disabled = false, correctAnswerId, betCounts }: OptionGridProps) {
+function OptionGrid({ options, selectedId = null, onSelect, disabled = false, correctAnswerId, betCounts, selectedBadge }: OptionGridProps) {
     const revealed = correctAnswerId !== undefined;
 
     return (
-        <ul className="game-options" aria-label="Which answer fits?">
+        <ul className="game-options" aria-label="Answers">
             {options.map((option, index) => {
                 const letter = OPTION_LETTERS[index] ?? String(index + 1);
                 const classes = [
@@ -40,7 +42,10 @@ function OptionGrid({ options, selectedId = null, onSelect, disabled = false, co
                 );
 
                 return (
-                    <li key={option.answerId}>
+                    <li key={option.answerId} className="game-option-item">
+                        {selectedBadge && option.answerId === selectedId && (
+                            <div className="gameOptionBetContainer"><span>{selectedBadge}</span></div>
+                        )}
                         {onSelect
                             ? (
                                 <button

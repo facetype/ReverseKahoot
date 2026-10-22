@@ -1,0 +1,369 @@
+/* Game screen layout: footer, scoreboard and shop panels, spiral background,
+   podium results and the bet badge. Adapted from the design prototype (game.css)
+   with these changes:
+   - ids (#back, #front, #badge, #slider, #input) became classes, since ids are
+     unique and these stylesheets are global;
+   - nothing is positioned at 50%/50% any more, and sizes use clamp()/min(), so the
+     screen works on a phone as well as on a projector;
+   - the panels are overlays, not 25vw columns, and the footer is sticky. */
+
+.pageContainer {
+  /* The prototype's greys, in one place. */
+  --game-panel: #111111;
+  --game-panel-2: #222222;
+  --game-panel-3: #333333;
+  --game-panel-hover: #444444;
+  --game-overlay: rgba(10, 10, 10, 0.94);
+  --game-navbar-h: 3.6rem;
+  --game-footer-h: 4rem;
+  --spiral-opacity: 0.5;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100dvh;
+  color: #f3f3f3;
+  text-align: center;
+}
+
+.gameStateContainer {
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.gameStateContainer > .quiz-page {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Spiral ---------------------------------------------------------- */
+
+@keyframes imageRotate {
+  from { rotate: 0deg; }
+  to { rotate: 360deg; }
+}
+
+.spiralBackground {
+  position: fixed;
+  inset: var(--game-navbar-h) 0 var(--game-footer-h) 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.spiralBackground img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 150vmax;
+  height: auto;
+  opacity: var(--spiral-opacity);
+  animation: imageRotate 180s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spiralBackground img { animation: none; }
+}
+
+/* ---- Panels (shop on the left, scoreboard on the right) ---------------- */
+
+.gameShopContainer,
+.gameAnswerScoreboardContainer {
+  position: fixed;
+  top: var(--game-navbar-h);
+  bottom: var(--game-footer-h);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: min(24rem, 100vw);
+  padding: 0.5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background-color: var(--game-overlay);
+}
+
+.gameShopContainer { left: 0; }
+.gameAnswerScoreboardContainer { right: 0; }
+
+.gamePanelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.gamePanelHeader h3 {
+  margin: 0.5rem 0;
+  font-size: 1.75rem;
+}
+
+.gamePanelClose {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gamePanelEmpty { margin: 1rem 0; }
+
+.gameShopHeaderContainer {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.gameShopHeaderContainer p { margin: 0; font-size: 0.9rem; }
+
+.gameShopItemContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 4rem;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background-color: var(--game-panel-2);
+  overflow: hidden;
+}
+
+.gameShopItemContainer button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 4rem;
+  padding: 0;
+  border: none;
+  border-radius: 15px;
+  background-color: var(--game-panel-2);
+  color: inherit;
+  font: inherit;
+  font-size: 1.25rem;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.gameShopItemContainer button:hover:not(:disabled) { background-color: var(--game-panel-3); }
+.gameShopItemContainer button:disabled { background-color: #000000; opacity: 0.6; cursor: not-allowed; }
+
+.gameShopItemIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 20%;
+  background-color: var(--game-panel-3);
+}
+
+.gameShopItemNameContainer {
+  flex: 1;
+  text-align: left;
+}
+
+.gameShopItemNameContainer p { margin: 0; }
+
+.gameShopItemCostContainer {
+  min-width: 25%;
+  padding-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.gameAnswerScoreboardPlayerContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 4rem;
+  flex-shrink: 0;
+  padding-left: 0.5rem;
+  box-sizing: border-box;
+  border-radius: 15px;
+  background-color: var(--game-panel);
+  font-size: 1.25rem;
+  overflow: hidden;
+}
+
+.gameAnswerScoreboardPlayerContainer > p {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.gameScoreboardMe { outline: 2px solid var(--accent); }
+
+.gameAnswerScoreboardPlayerPointsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-width: 30%;
+  padding: 0 0.5rem;
+  background-color: var(--game-panel-2);
+  white-space: nowrap;
+}
+
+.gameAnswerScoreboardPlayerPointsContainer p { margin: 0; }
+
+/* ---- Bet badge on the chosen option ---------------------------------- */
+
+.game-option-item { position: relative; }
+
+.gameOptionBetContainer {
+  position: absolute;
+  top: -0.75rem;
+  right: -0.25rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 5px;
+  background-color: var(--game-panel);
+  color: #f3f3f3;
+  pointer-events: none;
+}
+
+/* ---- Results / podium ------------------------------------------------ */
+
+.gameResultsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.gameResultsTextContainer h2,
+.gameResultsTextContainer p { margin: 0.25rem 0; }
+
+.gameResultsQuizWinnersContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.gameResultsPlace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.gameResultsStickerWrap {
+  position: relative;
+  z-index: 2;
+}
+
+.gameResultsSticker { width: clamp(70px, 16vw, 150px); height: auto; }
+
+.gameResultsBadge {
+  position: absolute;
+  top: -0.25rem;
+  left: -0.5rem;
+  width: clamp(32px, 6vw, 64px);
+  height: auto;
+}
+
+.gameResultsNameplateContainer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  margin-bottom: -2rem;
+  padding: 0 0.75rem;
+  border-radius: 10px;
+  background-color: rgba(10, 10, 10, 0.6);
+}
+
+.gameResultsNameplateContainer p {
+  margin: 0.15rem 0;
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.gameResultsPodium {
+  display: block;
+  width: clamp(100px, 26vw, 300px);
+  height: auto;
+}
+
+/* ---- Footer ---------------------------------------------------------- */
+
+.pageFooter {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: var(--game-footer-h);
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+  background-color: var(--game-panel);
+}
+
+.pageFooterLeftButtonsContainer,
+.pageFooterRightButtonsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pageFooter p { margin: 0; }
+
+.currentPointsContainer,
+.shopButton,
+.playerCounter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 15px;
+  background-color: var(--game-panel-3);
+}
+
+.shopButton button,
+.playerCounter button,
+.pageButton button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  padding: 0 0.5rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--game-panel-3);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.shopButton button { gap: 0.25rem; }
+.playerCounter button { gap: 0.65rem; }
+.pageButton button { gap: 0.65rem; padding-right: 0; }
+
+.shopButton button:hover,
+.playerCounter button:hover,
+.pageButton button:hover:not(:disabled) { background-color: var(--game-panel-hover); }
+
+.pageButton button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .pageButton button img { display: none; }
+  .pageButton button { padding-right: 0.75rem; }
+}

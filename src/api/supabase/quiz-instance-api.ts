@@ -59,6 +59,8 @@ export interface QuizInstanceSession {
     attendingPlayers: string[];
     players: PlayerStanding[];
     game: GameState;
+    quizTitle: string | null;
+    betCount: number;
     // Private realtime topic the host and players subscribe to.
     channel: string;
 }
@@ -125,6 +127,8 @@ interface RawInstance {
     questionStartedAt?: string | null;
     currentQuestion?: GameQuestion | null;
     lastReveal?: GameReveal | null;
+    quizTitle?: string | null;
+    betCount?: number;
     channel?: string;
 }
 
@@ -145,6 +149,8 @@ function normalize(row: RawInstance): QuizInstanceSession {
             currentQuestion: row.currentQuestion ?? null,
             lastReveal: row.lastReveal ?? null,
         },
+        quizTitle: row.quizTitle ?? null,
+        betCount: row.betCount ?? 0,
         channel: row.channel ?? `quiz-instance:${instanceId}`,
     };
 }
@@ -176,7 +182,7 @@ export async function getQuizInstance(instanceId: string): Promise<QuizInstanceS
     const client = configured();
     const { data, error } = await client
         .from('QuizInstance')
-        .select('id, quizId, hostId, joinCode, isStarted, attendingPlayers, gameId, phase, questionStartedAt, currentQuestion, lastReveal')
+        .select('id, quizId, hostId, joinCode, isStarted, attendingPlayers, gameId, phase, questionStartedAt, currentQuestion, lastReveal, Quiz(quizTitle)')
         .eq('id', instanceId)
         .maybeSingle();
     if (error) throw error;
