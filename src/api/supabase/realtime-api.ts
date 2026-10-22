@@ -30,7 +30,7 @@ export interface QuizChannelHandlers {
     // Any other event a member sent through sendQuizInstanceEvent.
     onEvent?: (event: string, message: QuizInstanceEventMessage) => void;
     // Fires once the private channel is actually listening (RLS-checked).
-    onSubscribed?: () => void;
+    QuizChannelHandlers?: () => void;
     // Fires when the channel errors or is closed by the server; a reload or
     // a rejoin (joinQuizInstance with the game's code) restores the session.
     onClosed?: () => void;
@@ -48,10 +48,9 @@ export function subscribeToQuizInstance(
         config: { private: true },
     });
 
-    channel
-        // One wildcard binding routes every broadcast on the topic, so member
-        // payloads sent with sendQuizInstanceEvent arrive without re-subscribing.
-        .on('broadcast', { event: '*' }, message => {
+    // One wildcard binding routes every broadcast on the topic, so member
+    // payloads sent with sendQuizInstanceEvent arrive without re-subscribing.
+    channel.on('broadcast', { event: '*' }, message => {
             const event = message.event;
             const payload = (message.payload ?? {}) as Record<string, unknown>;
             if (event === 'player-joined') {
