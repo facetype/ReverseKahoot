@@ -103,7 +103,6 @@ function Game() {
     if (loading || sessionLoading) {
         return (
             <div>
-                <Navbar />
                 <div className="quiz-page">
                     <p className="quiz-muted center-text">Loading game…</p>
                 </div>
@@ -114,7 +113,6 @@ function Game() {
     if (!instance || !game) {
         return (
             <div>
-                <Navbar />
                 <div className="quiz-page">
                     <p className="quiz-error center-text">{error ?? 'Game not found.'}</p>
                     <p className="center-text"><Link className="quiz-link" to="/">Back home</Link></p>
@@ -137,7 +135,6 @@ function Game() {
 
     return (
         <div className="pageContainer">
-            <Navbar />
             {isHost
                 ? (
                     <HostView
