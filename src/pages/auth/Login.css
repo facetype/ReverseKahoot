@@ -39,7 +39,7 @@
 
 .auth-card {
   width: 100%;
-  max-width: 380px;
+  max-width: 500px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
