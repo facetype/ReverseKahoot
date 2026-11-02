@@ -101,6 +101,19 @@
   margin: 0;
 }
 
+.quiz-editor-heading {
+  margin-top: 0.4rem;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.quiz-hint {
+  display: grid;
+  grid-template-columns: 1fr 5rem auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .quiz-actions {
   display: flex;
   flex-wrap: wrap;

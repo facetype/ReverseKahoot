@@ -19,6 +19,6 @@ export function useSession() {
     })
     return () => listener.subscription.unsubscribe()
   }, [])
-
-  return { session, loading }
+  const isGuest = session?.user.is_anonymous === true
+  return { session, loading, isGuest }  
 }
