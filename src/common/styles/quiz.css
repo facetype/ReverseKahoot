@@ -134,6 +134,7 @@
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
+  margin-top: 0.5rem;
 }
 
 .quiz-button {
