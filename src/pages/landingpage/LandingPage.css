@@ -87,3 +87,10 @@
   font-size: 1rem;
   font-weight: 600;
 }
+
+.landing-join input.landing-nickname {
+  font-family: var(--sans);
+  font-size: 1.25rem;
+  letter-spacing: normal;
+  text-indent: 0;
+}

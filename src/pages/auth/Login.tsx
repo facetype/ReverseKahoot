@@ -11,6 +11,7 @@ import {
 } from '@/api/supabase/profile-api.ts'
 import type { Profile } from '@/common/types'
 import './Login.css'
+import Navbar from '@/common/components/navbar/navbar';
 
 const HOME_PATH = '/'
 
@@ -51,7 +52,18 @@ function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   // AppRoutes sends recovery links here with this flag set.
-  const recovery = (location.state as { recovery?: boolean } | null)?.recovery === true
+  const locationState = location.state as { recovery?: boolean; from?: string } | null
+  const recovery = locationState?.recovery === true
+  const from = locationState?.from
+  // Where to go once signed in: an app path, never back to /login itself.
+  const returnTo =
+    typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') && !from.startsWith('/login')
+      ? from
+      : null
+
+  function goBack() {
+    navigate(returnTo ?? HOME_PATH, { replace: true })
+  }
   const [mode, setMode] = useState<Mode>(recovery ? 'update-password' : 'signin')
   const [session, setSession] = useState<Session | null>(null)
   const [email, setEmail] = useState('')
@@ -60,6 +72,8 @@ function Login() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<Message>(null)
+
+  const signedIn = session !== null && !session.user.is_anonymous
 
   useEffect(() => {
     if (!supabase) return
@@ -78,7 +92,7 @@ function Login() {
   // Whenever a session appears, make sure the user's Profile row exists and
   // load it so the username can be shown.
   useEffect(() => {
-    if (!session) return
+    if (!session || session.user.is_anonymous) return
     let cancelled = false
     ensureProfile(session.user)
       .then((p) => {
@@ -110,7 +124,7 @@ function Login() {
       if (mode === 'signin') {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
-        navigate(HOME_PATH)
+        goBack()
       } else if (mode === 'signup') {
         const chosenName = userName.trim()
         const invalid = validateUserName(chosenName)
@@ -128,7 +142,7 @@ function Login() {
         if (!data.session) {
           setMessage({ kind: 'success', text: 'Account created. Check your email to confirm it.' })
         } else {
-          navigate(HOME_PATH)
+          goBack()
         }
       } else if (mode === 'reset') {
         const redirectTo = `${window.location.origin}/`
@@ -175,8 +189,10 @@ function Login() {
     )
   }
 
-  if (session && mode !== 'update-password') {
+  if (signedIn && mode !== 'update-password') {
     return (
+      <div> <Navbar/>
+      <div className="auth">
       <main className="auth-card">
         <h1>Signed in</h1>
         <p className="auth-user">
@@ -184,13 +200,14 @@ function Login() {
           {profile && <span className="auth-user-email"> ({session.user.email})</span>}
         </p>
         <div className="auth-actions">
-          <Link className="auth-submit" to={HOME_PATH}>Continue</Link>
+          <Link className="auth-submit" to={returnTo ?? HOME_PATH}>Continue</Link>
           <button type="button" className="auth-link" onClick={handleSignOut} disabled={loading}>
             Sign out
           </button>
         </div>
         {message && <p className={`auth-message ${message.kind}`}>{message.text}</p>}
       </main>
+      </div></div>
     )
   }
 
@@ -200,7 +217,8 @@ function Login() {
   const showPassword = mode !== 'reset'
 
   return (
-    <div className="auth">
+    <div>    <Navbar/>
+    <div className='auth'>
     <main className="auth-card">
       {mode !== 'update-password' && (
         <div className="auth-tabs" role="tablist" aria-label="Authentication options">
@@ -287,7 +305,7 @@ function Login() {
 
       {message && <p className={`auth-message ${message.kind}`}>{message.text}</p>}
     </main>
-    </div>
+    </div></div>
   )
 }
 
