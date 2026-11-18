@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getCategories, listQuizzes } from '@/api/supabase/quiz-api';
 import { createQuizInstance } from '@/api/supabase/quiz-instance-api';
 import type { Category, QuizSummary } from '@/common/types';
@@ -9,13 +9,14 @@ import Navbar from '@/common/components/navbar/navbar';
 import { useMemo } from 'react';
 
 function QuizList() {
-    const { session } = useSession();
+    const { session, isGuest } = useSession();
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [hostingQuizId, setHostingQuizId] = useState<number | null>(null);
     const [searchItem, setSearchItem] = useState('');
     const navigate = useNavigate();
+    
 
     useEffect(() => {
         Promise.all([listQuizzes(), getCategories()])
@@ -27,11 +28,12 @@ function QuizList() {
             
             .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load quizzes.'));
     }, []);
-
+    const location = useLocation();
+    
     const categoryName = (id: number) =>
         categories.find(c => c.categoryId === id)?.categoryName ?? 'Uncategorised';
 
-    const userId = session?.user.id ?? null;
+    const userId = session && !isGuest ? session.user.id : null;
 
     const handleHost = async (quiz: QuizSummary) => {
         setHostingQuizId(quiz.quizId);
@@ -83,7 +85,7 @@ function QuizList() {
                 />
                 {userId
                     ? <Link className="quiz-button" to="/quizzes/new">New quiz</Link>
-                    : <a className="quiz-button" href="/login/">Sign in</a>}
+                    : <Link className="quiz-button" to="/login/" state={{ from: location.pathname + location.search + location.hash }}>Sign in</Link>}
             </header>
 
             {error && <p className="quiz-error center-text">{error}</p>}

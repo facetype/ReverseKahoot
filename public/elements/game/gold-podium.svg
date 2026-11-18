@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 3840 6048" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:affinity="https://www.affinity.studio/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-1103.862017,0)">
+        <g id="Gold-Podium" affinity:id="Gold Podium" transform="matrix(1.625397,0,0,1.625397,-1991.543905,-3929.732211)">
+            <path d="M3971.329,6047.244L3971.329,6138.179L2199.676,6138.179L2199.676,6047.244L2347.314,6047.244L2347.314,3635.164C2347.314,3574.966 2298.513,3526.166 2238.315,3526.166L2199.676,3526.166L2199.676,2594.872L3971.329,2594.872L3971.329,3526.166L3932.69,3526.166C3872.492,3526.166 3823.691,3574.966 3823.691,3635.164L3823.691,6047.244L3971.329,6047.244Z" style="fill:rgb(255,196,0);"/>
+            <g transform="matrix(0.373581,0,0,1.543333,597.905453,-2366.884808)">
+                <rect x="4919.922" y="3214.961" width="316.157" height="2236.958" style="fill:rgb(255,164,0);"/>
+            </g>
+            <g transform="matrix(0.373581,0,0,1.543333,1188.456634,-2366.884808)">
+                <rect x="4919.922" y="3214.961" width="316.157" height="2236.958" style="fill:rgb(255,164,0);"/>
+            </g>
+            <g transform="matrix(0.373581,0,0,1.543333,1779.007815,-2366.884808)">
+                <rect x="4919.922" y="3214.961" width="316.157" height="2236.958" style="fill:rgb(255,164,0);"/>
+            </g>
+            <g>
+                <g transform="matrix(1,0,0,1.075103,0,-194.881372)">
+                    <rect x="2199.676" y="2430.082" width="1771.654" height="164.789" style="fill:rgb(255,164,0);"/>
+                </g>
+                <g transform="matrix(1.605502,0,0,1.605502,-1036.632162,-1463.925701)">
+                    <circle cx="2015.761" cy="2601.621" r="183.915" style="fill:rgb(255,164,0);"/>
+                </g>
+                <g transform="matrix(1.605502,0,0,1.605502,735.021382,-1463.925701)">
+                    <circle cx="2015.761" cy="2601.621" r="183.915" style="fill:rgb(255,164,0);"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

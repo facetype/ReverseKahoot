@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 6048 6048" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:affinity="https://www.affinity.studio/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(2.625916,0,0,2.625916,-3794.571792,-3427.928649)">
+        <path d="M2060.097,1511.811L3747.956,3328.969L2004.518,3328.969L1445.047,1511.811L2060.097,1511.811Z" style="fill:white;fill-opacity:0.5;"/>
+        <g transform="matrix(0.954224,0,0,0.413276,42.148423,1817.257388)">
+            <ellipse cx="2970.047" cy="3657.874" rx="913.537" ry="176.571" style="fill:white;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-87.411412,323.892077)">
+            <text x="2745.317px" y="2728.439px" style="font-family:'BerlinSansFB-Reg', 'Berlin Sans FB', sans-serif;font-size:1250px;fill:white;">!</text>
+        </g>
+    </g>
+</svg>

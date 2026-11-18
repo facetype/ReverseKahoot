@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "jsr:@supabase/server@^1";
 import { broadcast, quizChannel } from "../_shared/realtime.ts";
+import { rpcErrorResponse } from "../_shared/rpc.ts";
 
 // Matches the client generator (see src/common/constants/game.ts).
 const JOIN_CODE_LENGTH = 6;
@@ -8,6 +9,7 @@ const JOIN_CODE_PATTERN = /^[A-Z0-9]+$/;
 
 interface ReqPayload {
   joinCode: string;
+  nickname: string;
 }
 
 interface QuizInstanceRow {
@@ -18,6 +20,7 @@ interface QuizInstanceRow {
   attendingPlayers: string[] | null;
   isStarted: boolean | null;
   alreadyJoined: boolean;
+  players: unknown[];
 }
 
 export default {
@@ -52,15 +55,14 @@ export default {
     // The RPC holds a row lock while checking isStarted and adding the player.
     // Concurrent joins cannot overwrite each other, and starting the game takes
     // the same lock. Only the admin client can call this with a verified user id.
+    // The RPC validates the nickname (length, unique in this game).
     const { data: result, error } = await ctx.supabaseAdmin.rpc("join_quiz_instance", {
       p_join_code: joinCode,
       p_player_id: playerId,
+      p_nickname: typeof payload?.nickname === "string" ? payload.nickname : "",
     });
 
-    if (error) {
-      const status = error.code === "PT404" ? 404 : error.code === "PT409" ? 409 : 500;
-      return Response.json({ error: error.message }, { status });
-    }
+    if (error) return rpcErrorResponse(error);
     if (!result) {
       return Response.json({ error: "Could not join the game." }, { status: 500 });
     }
@@ -77,6 +79,7 @@ export default {
           instanceId: data.id,
           playerId,
           attendingPlayers: players,
+          players: data.players,
         });
       } catch (broadcastError) {
         console.error("player-joined broadcast failed:", broadcastError);
@@ -90,6 +93,7 @@ export default {
       joinCode: data.joinCode,
       isStarted: data.isStarted ?? false,
       attendingPlayers: players,
+      players: data.players,
       channel,
       alreadyJoined,
     });
