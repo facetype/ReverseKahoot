@@ -1,5 +1,5 @@
 import type { PlayerStanding } from '@/api/supabase/quiz-instance-api';
-import { stickerFor } from '@/common/stickers';
+import { shapeStickerFor, drawingStickerFor } from '@/common/stickers';
 
 interface ScoreboardPanelProps {
     standings: PlayerStanding[];
@@ -22,7 +22,8 @@ function ScoreboardPanel({ standings, me = null, onClose }: ScoreboardPanelProps
                     key={player.userId}
                     className={`gameAnswerScoreboardPlayerContainer${player.userId === me ? ' gameScoreboardMe' : ''}`}
                 >
-                    <img src={stickerFor(player.userId)} width="50" alt="" />
+                    <img className="gameStickerShape" src={shapeStickerFor(player.userId)} width="50" alt="" />
+                    <img className="gameStickerDrawing" src={drawingStickerFor(player.userId)} width="50" alt="" />
                     <p>
                         {index + 1}. {player.nickname}
                         {player.userId === me ? ' (you)' : ''}
