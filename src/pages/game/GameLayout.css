@@ -268,12 +268,35 @@
 
 .gameResultsSticker { width: clamp(70px, 16vw, 150px); height: auto; }
 
+.gameStickerShape {
+  position: relative;
+  z-index: 1;
+}
+
+.gameStickerDrawing {
+  position: absolute;
+  z-index: 2;
+}
+
+.gameResultsStickerShape {
+  position: relative;
+  z-index: 1;
+}
+
+.gameResultsStickerDrawing {
+  position: absolute;
+  z-index: 2;
+  top: -.25rem;
+  left: -.25rem;
+}
+
 .gameResultsBadge {
   position: absolute;
   top: -0.25rem;
   left: -0.5rem;
   width: clamp(32px, 6vw, 64px);
   height: auto;
+  z-index: 3;
 }
 
 .gameResultsNameplateContainer {

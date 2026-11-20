@@ -1,5 +1,5 @@
 import type { PlayerStanding } from '@/api/supabase/quiz-instance-api';
-import { stickerFor } from '@/common/stickers';
+import { drawingStickerFor, shapeStickerFor } from '@/common/stickers';
 
 // Left to right: second, first, third. Medal art and podium art are the same
 // files the design uses.
@@ -24,7 +24,10 @@ function ResultsPodium({ standings, me = null }: ResultsPodiumProps) {
                 return (
                     <div key={medal} className={`gameResultsPlace gameResultsPlace-${medal}`} aria-label={label}>
                         <div className="gameResultsStickerWrap">
-                            <img className="gameResultsSticker" src={stickerFor(player.userId)} alt="" />
+                            <div>
+                                <img className="gameResultsSticker gameResultsStickerShape" src={shapeStickerFor(player.userId)} alt="" />
+                                <img className="gameResultsSticker gameResultsStickerDrawing" src={drawingStickerFor(player.userId)} alt="" />
+                            </div>
                             <img className="gameResultsBadge" src={`/elements/game/win_badge_${medal}.svg`} alt="" />
                         </div>
                         <div className="gameResultsNameplateContainer">
