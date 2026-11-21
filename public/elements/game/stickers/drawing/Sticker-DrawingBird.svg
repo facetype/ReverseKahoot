@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:affinity="https://www.affinity.studio/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g id="Drawing">
+<svg width="100%" height="100%" viewBox="0 0 160 169" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:affinity="https://www.affinity.studio/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-48.067908,-43.50558)">
         <g id="drawing-bird">
             <g transform="matrix(1,0,0,1,11.307708,15.760141)">
                 <path d="M190.271,70.448C191.982,70.234 193.545,71.45 193.759,73.161C193.973,74.873 192.757,76.436 191.046,76.65C177.343,78.362 177.157,79.287 164.102,74.935C161.133,73.945 155.888,73.474 151.734,74.55C149.677,75.083 147.817,75.906 147.221,77.694C146.32,80.397 144.847,81.572 143.281,82.492C142.422,82.998 141.352,83.172 141.008,84.894C140.866,85.601 140.137,89.348 136.681,92.804C135.461,94.024 133.481,94.024 132.261,92.804C131.042,91.584 131.042,89.604 132.261,88.385C134.329,86.317 134.794,84.091 134.879,83.668C135.514,80.495 136.923,79.101 138.45,78.082C138.949,77.749 139.473,77.473 139.992,77.175C140.491,76.89 141.006,76.575 141.292,75.717C142.531,72 145.888,69.609 150.166,68.5C155.51,67.115 162.258,67.732 166.078,69.006C177.798,72.912 177.97,71.985 190.271,70.448Z" style="fill:white;"/>
