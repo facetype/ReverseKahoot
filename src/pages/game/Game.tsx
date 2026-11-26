@@ -12,7 +12,6 @@ import {
 } from '@/api/supabase/quiz-instance-api';
 import { useCountdown } from '@/common/hooks/useCountdown';
 import { QUESTION_TIME_LIMIT_SECONDS } from '@/common/constants/game';
-import Navbar from '@/common/components/navbar/navbar';
 import HostView from './HostView';
 import PlayerView from './PlayerView';
 import '@/common/styles/quiz.css';
