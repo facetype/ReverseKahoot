@@ -107,7 +107,7 @@ async function errorMessage(error: unknown): Promise<string> {
     return error instanceof Error ? error.message : 'The request failed.';
 }
 
-async function invoke<T>(name: string, body: Record<string, unknown>): Promise<T> {
+export async function invoke<T>(name: string, body: Record<string, unknown>): Promise<T> {
     const client = configured();
     const { data, error } = await client.functions.invoke(name, { body });
     if (error) throw new Error(await errorMessage(error));
